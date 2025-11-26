@@ -1,0 +1,58 @@
+<div
+  class="bar-card bg-dark text-white border border-secondary rounded p-3"
+  (click)="onCardClick()"
+>
+  <div class="row g-3">
+    <!-- Column 1: Image (spans all 4 rows) -->
+    <div class="col-3">
+      <div class="bar-image-container">
+        <img [src]="bar().imageUrl" [alt]="bar().name" class="bar-image img-fluid rounded" />
+      </div>
+    </div>
+
+    <!-- Columns 2-4 -->
+    <div class="col-9">
+      <div class="row g-2">
+        <!-- Row 1 -->
+        <div class="col-5">
+          <h5 class="bar-name mb-0">{{ bar().name }}</h5>
+        </div>
+        <div class="col-5">
+          <div class="price-level medieval-font">{{ getPriceLevelText(bar().priceLevel) }}</div>
+        </div>
+        <div class="col-2 text-end">
+          <button
+            class="btn btn-link p-0 border-0 like-btn"
+            (click)="onLikeClick($event)"
+            [class.liked]="bar().isLiked"
+            aria-label="Like"
+          >
+            <img src="icons/like_icon.png" alt="Like" class="like-icon" />
+          </button>
+        </div>
+
+        <!-- Row 2-3: Address and Description -->
+        <div class="col-5">
+          <div class="bar-address">
+            {{ bar().address }}
+          </div>
+        </div>
+        <div class="col-7">
+          <div class="bar-description">
+            {{ bar().description }}
+          </div>
+        </div>
+
+        <!-- Row 4: Rating and Phone -->
+        <div class="col-5">
+          <div class="bar-rating"><strong>Rating:</strong> {{ bar().rating }}</div>
+        </div>
+        <div class="col-7 text-end">
+          <div class="bar-phone">
+            {{ bar().phone }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

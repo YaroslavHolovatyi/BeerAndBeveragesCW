@@ -1,0 +1,99 @@
+<div class="bars-list-page">
+  <div class="container py-4">
+    <h1 class="text-white mb-4">List of Pubs</h1>
+
+    <!-- Filters Section -->
+    <div class="filters-container bg-dark text-white p-4 rounded mb-4 border border-secondary">
+      <div class="row g-3">
+        <!-- City Autocomplete -->
+        <div class="col-md-6">
+          <label for="cityInput" class="form-label">City</label>
+          <div class="position-relative">
+            <input
+              type="text"
+              id="cityInput"
+              class="form-control bg-dark text-white border-secondary"
+              placeholder="Start typing city name..."
+              [(ngModel)]="selectedCity"
+              (input)="onCityInput($event)"
+              autocomplete="off"
+            />
+            <div
+              *ngIf="showCityDropdown"
+              class="city-dropdown bg-dark border border-secondary rounded mt-1 position-absolute w-100"
+              style="z-index: 1000; max-height: 200px; overflow-y: auto"
+            >
+              <button
+                *ngFor="let city of filteredCities"
+                type="button"
+                class="dropdown-item text-white bg-dark border-0 text-start p-2"
+                (click)="selectCity(city)"
+                style="cursor: pointer"
+              >
+                {{ city }}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Drink Type Checkboxes -->
+        <div class="col-md-6">
+          <label class="form-label">Drink Types</label>
+          <div class="d-flex flex-wrap gap-3">
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="beerCheck"
+                [(ngModel)]="drinkTypes.beer"
+                (change)="onDrinkTypeChange()"
+              />
+              <label class="form-check-label" for="beerCheck"> Beer </label>
+            </div>
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="wineCheck"
+                [(ngModel)]="drinkTypes.wine"
+                (change)="onDrinkTypeChange()"
+              />
+              <label class="form-check-label" for="wineCheck"> Wine </label>
+            </div>
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="shotsCheck"
+                [(ngModel)]="drinkTypes.shots"
+                (change)="onDrinkTypeChange()"
+              />
+              <label class="form-check-label" for="shotsCheck"> Shots </label>
+            </div>
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="drinksCheck"
+                [(ngModel)]="drinkTypes.drinks"
+                (change)="onDrinkTypeChange()"
+              />
+              <label class="form-check-label" for="drinksCheck"> Drinks </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mt-3">
+        <div class="col-12">
+          <button class="btn btn-secondary" (click)="clearFilters()">Clear Filters</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bars List -->
+    <div class="bars-grid">
+      <app-bar-card *ngFor="let bar of bars" [bar]="bar"></app-bar-card>
+    </div>
+  </div>
+</div>

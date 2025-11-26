@@ -1,0 +1,66 @@
+<div class="bar-detail-page" *ngIf="bar">
+  <div class="container py-4">
+    <!-- Main Bar Card -->
+    <div class="bar-detail-card bg-dark text-white border border-secondary rounded p-4">
+      <!-- Header Section -->
+      <div class="row mb-4">
+        <div class="col-md-4">
+          <h2 class="bar-name mb-3">{{ bar.name }}</h2>
+          <p class="bar-address mb-0">{{ bar.address }}</p>
+        </div>
+        <div class="col-md-4 text-center">
+          <div class="price-level medieval-font">{{ getPriceLevelText(bar.priceLevel) }}</div>
+        </div>
+        <div class="col-md-4 text-end">
+          <button
+            class="btn btn-link p-0 border-0 like-btn"
+            (click)="toggleLike()"
+            [class.liked]="bar.isLiked"
+            aria-label="Like"
+          >
+            <img src="icons/like_icon.png" alt="Like" class="like-icon" />
+          </button>
+        </div>
+      </div>
+
+      <!-- Description Section -->
+      <div class="row mb-4">
+        <div class="col-12">
+          <h4 class="section-title mb-3">Description</h4>
+          <p class="bar-description">{{ bar.description }}</p>
+        </div>
+      </div>
+
+      <!-- Rating Images Section -->
+      <div class="row mb-4">
+        <div class="col-12">
+          <div class="rating-images d-flex gap-3">
+            <div
+              *ngFor="let img of ratingImages"
+              class="rating-image-container bg-secondary border border-light rounded p-3 text-center flex-fill"
+            >
+              <img [src]="'icons/rating_icons/' + img" [alt]="img" class="rating-icon" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phone Section -->
+      <div class="row mb-4">
+        <div class="col-12">
+          <p class="bar-phone mb-0"><strong>Phone:</strong> {{ bar.phone }}</p>
+        </div>
+      </div>
+
+      <!-- Comments Section -->
+      <div class="row">
+        <div class="col-12">
+          <h4 class="section-title mb-3">Comments</h4>
+          <div class="comments-list">
+            <app-comment *ngFor="let comment of comments" [comment]="comment"></app-comment>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

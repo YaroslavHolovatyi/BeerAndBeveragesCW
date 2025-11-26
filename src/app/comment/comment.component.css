@@ -1,0 +1,37 @@
+.comment-card {
+  background-color: #2d2d2d !important;
+  transition: transform 0.2s ease;
+  margin-bottom: 1rem;
+}
+
+.comment-card:hover {
+  transform: translateX(5px);
+}
+
+.user-image-container {
+  flex-shrink: 0;
+}
+
+.user-image {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border: 2px solid #4caf50;
+}
+
+.comment-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.comment-user {
+  font-size: 1.1rem;
+  color: #4caf50;
+  font-weight: bold;
+}
+
+.comment-text {
+  font-size: 1rem;
+  color: #ddd;
+  line-height: 1.5;
+}

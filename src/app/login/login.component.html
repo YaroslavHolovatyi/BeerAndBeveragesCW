@@ -1,0 +1,80 @@
+<div class="login-page">
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-md-6 col-lg-5">
+        <div class="login-card bg-dark text-white border border-secondary rounded p-5">
+          <div class="text-center mb-4">
+            <i class="fas fa-user-shield fa-4x text-warning mb-3"></i>
+            <h2 class="text-warning mb-2">Welcome Back, Adventurer!</h2>
+            <p class="text-muted">Enter your credentials to continue your quest</p>
+          </div>
+
+          <form (ngSubmit)="onLogin()">
+            <!-- Email Field -->
+            <div class="mb-4">
+              <label for="email" class="form-label">
+                <i class="fas fa-envelope me-2"></i>Email
+              </label>
+              <input
+                type="email"
+                class="form-control bg-secondary text-white border-secondary"
+                id="email"
+                [(ngModel)]="email"
+                name="email"
+                placeholder="Enter your email"
+                required
+              />
+            </div>
+
+            <!-- Password Field -->
+            <div class="mb-4">
+              <label for="password" class="form-label">
+                <i class="fas fa-lock me-2"></i>Password
+              </label>
+              <input
+                type="password"
+                class="form-control bg-secondary text-white border-secondary"
+                id="password"
+                [(ngModel)]="password"
+                name="password"
+                placeholder="Enter your password"
+                required
+              />
+            </div>
+
+            <!-- Forgot Password Button -->
+            <div class="mb-4 text-end">
+              <button
+                type="button"
+                class="btn btn-link text-warning p-0"
+                (click)="onForgotPassword()"
+              >
+                <i class="fas fa-question-circle me-1"></i>Forgot Password?
+              </button>
+            </div>
+
+            <!-- Error Message -->
+            <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+              <i class="fas fa-exclamation-triangle me-2"></i>{{ errorMessage }}
+            </div>
+
+            <!-- Login Button -->
+            <button type="submit" class="btn btn-success w-100 btn-lg mb-3">
+              <i class="fas fa-sign-in-alt me-2"></i>Login
+            </button>
+
+            <!-- Sign Up Link -->
+            <div class="text-center">
+              <p class="mb-0">
+                New to the realm?
+                <a routerLink="/signup" class="text-warning">
+                  <strong>Create an Account</strong>
+                </a>
+              </p>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

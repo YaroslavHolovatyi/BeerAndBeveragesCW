@@ -1,0 +1,22 @@
+<div class="comment-card bg-secondary border border-light rounded p-3">
+  <div class="d-flex gap-3">
+    <!-- User Image -->
+    <div class="user-image-container">
+      <img
+        [src]="comment().userImage || defaultUserImage"
+        [alt]="comment().user"
+        class="user-image rounded-circle"
+      />
+    </div>
+
+    <!-- Comment Content -->
+    <div class="comment-content flex-grow-1">
+      <div class="comment-user mb-2">
+        <strong>{{ comment().user }}</strong>
+      </div>
+      <div class="comment-text">
+        {{ comment().comment }}
+      </div>
+    </div>
+  </div>
+</div>

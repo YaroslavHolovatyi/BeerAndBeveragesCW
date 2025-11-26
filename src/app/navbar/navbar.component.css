@@ -1,0 +1,30 @@
+/* Custom hover effects for navbar buttons */
+.btn-link:hover {
+  color: #4caf50 !important;
+}
+
+/* Additional spacing for navbar brand */
+.navbar-brand {
+  letter-spacing: 2px;
+  margin: 0;
+}
+
+/* Like button styling to match bar card */
+.like-btn-navbar {
+  transition: transform 0.2s ease;
+}
+
+.like-btn-navbar:hover {
+  transform: scale(1.1);
+}
+
+.like-icon-navbar {
+  width: 32px;
+  height: 32px;
+  filter: grayscale(100%);
+  transition: filter 0.2s ease;
+}
+
+.like-btn-navbar:hover .like-icon-navbar {
+  filter: grayscale(0%);
+}

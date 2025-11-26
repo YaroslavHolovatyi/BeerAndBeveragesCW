@@ -1,0 +1,106 @@
+.bar-detail-page {
+  min-height: 100vh;
+}
+
+.bar-detail-card {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.bar-name {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.bar-address {
+  font-size: 1.1rem;
+  color: #bbb;
+}
+
+.price-level {
+  font-size: 1.5rem;
+  color: #ffd700;
+}
+
+.medieval-font {
+  font-family: 'MedievalSharp', serif;
+}
+
+.like-btn {
+  transition: transform 0.2s ease;
+}
+
+.like-btn:hover {
+  transform: scale(1.1);
+}
+
+.like-icon {
+  width: 48px;
+  height: 48px;
+  filter: grayscale(100%);
+  transition: filter 0.2s ease;
+}
+
+.like-btn.liked .like-icon,
+.like-btn:hover .like-icon {
+  filter: grayscale(0%);
+}
+
+.section-title {
+  font-size: 1.3rem;
+  font-weight: bold;
+  border-bottom: 2px solid #4caf50;
+  padding-bottom: 0.5rem;
+}
+
+.bar-description {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #ddd;
+}
+
+.rating-images {
+  display: flex;
+  gap: 1rem;
+}
+
+.rating-image-container {
+  background-color: #2d2d2d !important;
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rating-icon {
+  max-width: 80px;
+  max-height: 80px;
+  object-fit: contain;
+}
+
+.bar-phone {
+  font-size: 1.1rem;
+  color: #fff;
+}
+
+.comments-list {
+  max-height: none;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .bar-name {
+    font-size: 1.5rem;
+  }
+
+  .price-level {
+    font-size: 1.2rem;
+  }
+
+  .rating-images {
+    flex-direction: column;
+  }
+
+  .rating-image-container {
+    min-height: 100px;
+  }
+}

@@ -1,0 +1,47 @@
+.bars-list-page {
+  min-height: 100vh;
+}
+
+.filters-container {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.form-control:focus {
+  background-color: #2d2d2d;
+  border-color: #4caf50;
+  color: white;
+}
+
+.city-dropdown {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+.dropdown-item:hover {
+  background-color: #4caf50 !important;
+}
+
+.form-check-input:checked {
+  background-color: #4caf50;
+  border-color: #4caf50;
+}
+
+.form-check-input:focus {
+  border-color: #4caf50;
+  box-shadow: 0 0 0 0.25rem rgba(76, 175, 80, 0.25);
+}
+
+.bars-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+h1 {
+  font-weight: bold;
+  font-size: 2rem;
+}
+
+.form-label {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}

@@ -1,0 +1,152 @@
+.about-page {
+  min-height: 100vh;
+}
+
+.about-content {
+  max-width: 900px;
+  margin: 0 auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  line-height: 1.8;
+}
+
+h1 {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #ffd700;
+}
+
+h1 i {
+  color: #ff8c00;
+}
+
+.intro-section {
+  text-align: center;
+}
+
+.intro-section h2 {
+  font-size: 2rem;
+}
+
+.intro-section .lead {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #ffd700;
+  margin-bottom: 1.5rem;
+}
+
+.intro-section p {
+  font-size: 1.1rem;
+  color: #ddd;
+}
+
+.section-title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #ffd700;
+  margin-bottom: 1.5rem;
+}
+
+.section-title i {
+  margin-right: 0.5rem;
+  color: #ff8c00;
+}
+
+.feature-card {
+  background-color: #1a1a1a;
+  border: 1px solid #444;
+  border-left: 4px solid #4caf50;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  transition: transform 0.2s ease;
+}
+
+.feature-card:hover {
+  transform: translateX(5px);
+}
+
+.feature-card h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.feature-card h3 i {
+  margin-right: 0.5rem;
+}
+
+.feature-card p {
+  font-size: 1.05rem;
+  color: #ddd;
+  margin-bottom: 0.8rem;
+}
+
+.custom-list {
+  list-style: none;
+  padding-left: 1.5rem;
+  color: #ddd;
+  font-size: 1.05rem;
+}
+
+.custom-list li {
+  margin-bottom: 0.5rem;
+  position: relative;
+}
+
+.custom-list li::before {
+  content: '⚔️';
+  position: absolute;
+  left: -1.5rem;
+}
+
+.final-section {
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  border: 2px solid #ffd700;
+  padding: 2rem;
+  border-radius: 0.5rem;
+}
+
+.final-section .lead {
+  font-size: 1.4rem;
+  color: #ffd700;
+}
+
+.final-section p {
+  font-size: 1.1rem;
+  color: #ddd;
+}
+
+.final-section strong {
+  color: #4caf50;
+  font-size: 1.15rem;
+}
+
+.final-section em {
+  color: #ff8c00;
+  font-style: italic;
+}
+
+hr {
+  opacity: 0.3;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .about-content {
+    padding: 2rem !important;
+  }
+
+  h1 {
+    font-size: 1.8rem;
+  }
+
+  .intro-section h2 {
+    font-size: 1.5rem;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+  }
+
+  .feature-card h3 {
+    font-size: 1.3rem;
+  }
+}

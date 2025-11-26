@@ -1,0 +1,92 @@
+<div class="questionnaire-page">
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="questionnaire-card bg-dark text-white border border-secondary rounded p-5">
+          <!-- Header -->
+          <div class="text-center mb-4">
+            <i class="fas fa-scroll fa-3x text-warning mb-3"></i>
+            <h2 class="text-warning mb-2">Опитувальник Героя</h2>
+            <p class="text-muted">Дізнайся, який ти герой таверн!</p>
+          </div>
+
+          <!-- Progress Bar -->
+          <div class="mb-4">
+            <div class="progress" style="height: 25px">
+              <div
+                class="progress-bar bg-success"
+                role="progressbar"
+                [style.width.%]="progress"
+                [attr.aria-valuenow]="progress"
+                aria-valuemin="0"
+                aria-valuemax="100"
+              >
+                Крок {{ currentStep + 1 }} з {{ questions.length }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Question -->
+          <div class="question-container mb-4">
+            <h3 class="question-title text-warning mb-4">
+              <span class="question-number">{{ currentQuestion.id }}️⃣</span>
+              {{ currentQuestion.question }}
+            </h3>
+
+            <!-- Options -->
+            <div class="options-list">
+              <button
+                *ngFor="let option of currentQuestion.options"
+                class="option-btn btn w-100 text-start mb-3 p-3"
+                [class.selected]="isSelected(option.value)"
+                (click)="selectAnswer(option.value)"
+              >
+                <i
+                  class="fas me-3"
+                  [class.fa-circle]="!isSelected(option.value)"
+                  [class.fa-check-circle]="isSelected(option.value)"
+                ></i>
+                {{ option.label }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Navigation Buttons -->
+          <div class="d-flex justify-content-between mt-4">
+            <button
+              class="btn btn-secondary btn-lg"
+              (click)="previousStep()"
+              [disabled]="currentStep === 0"
+            >
+              <i class="fas fa-arrow-left me-2"></i>
+              Назад
+            </button>
+
+            <button
+              class="btn btn-success btn-lg"
+              (click)="nextStep()"
+              [disabled]="!answers[currentQuestion.id]"
+            >
+              {{ currentStep === questions.length - 1 ? 'Завершити' : 'Далі' }}
+              <i
+                class="fas me-2"
+                [class.fa-arrow-right]="currentStep < questions.length - 1"
+                [class.fa-check]="currentStep === questions.length - 1"
+              ></i>
+            </button>
+          </div>
+
+          <!-- Step Indicators -->
+          <div class="step-indicators mt-4 d-flex justify-content-center gap-2">
+            <span
+              *ngFor="let question of questions; let i = index"
+              class="step-dot"
+              [class.completed]="answers[question.id]"
+              [class.active]="i === currentStep"
+            ></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,77 @@
+<div class="race-result-page">
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <!-- Loading State -->
+        <div
+          *ngIf="isLoading"
+          class="loading-card bg-dark text-white border border-secondary rounded p-5 text-center"
+        >
+          <i class="fas fa-magic fa-4x text-warning mb-4 spinning"></i>
+          <h2 class="text-warning mb-4">Calculating Your Destiny...</h2>
+          <p class="text-muted mb-4">The ancient magic is determining your true race</p>
+
+          <div class="progress" style="height: 30px">
+            <div
+              class="progress-bar progress-bar-striped progress-bar-animated bg-warning"
+              role="progressbar"
+              [style.width.%]="progress"
+              [attr.aria-valuenow]="progress"
+              aria-valuemin="0"
+              aria-valuemax="100"
+            >
+              {{ progress }}%
+            </div>
+          </div>
+        </div>
+
+        <!-- Result State -->
+        <div
+          *ngIf="!isLoading && userRace"
+          class="result-card bg-dark text-white border border-secondary rounded p-5"
+        >
+          <div class="text-center mb-5">
+            <h1 class="text-warning mb-3">Oh, so you are...</h1>
+            <div class="race-reveal mb-4">
+              <h2 class="race-name text-success display-4 mb-2">{{ userRace.name }}</h2>
+              <h3 class="race-title text-warning">{{ userRace.title }}</h3>
+            </div>
+          </div>
+
+          <!-- Race Image -->
+          <div class="race-image-container mb-4">
+            <img
+              [src]="userRace.image"
+              [alt]="userRace.name"
+              class="race-image img-fluid rounded border border-warning"
+              (error)="$any($event.target).src = '/races_images/human_m.png'"
+            />
+          </div>
+
+          <!-- Race Description -->
+          <div class="race-description mb-5">
+            <div class="description-box bg-secondary border border-warning rounded p-4">
+              <p class="lead mb-0">{{ userRace.description }}</p>
+            </div>
+          </div>
+
+          <!-- Action Button -->
+          <div class="text-center">
+            <button class="btn btn-success btn-lg" (click)="goToHome()">
+              <i class="fas fa-home me-2"></i>
+              Begin Your Adventure
+            </button>
+          </div>
+
+          <!-- Decorative Elements -->
+          <div class="text-center mt-4">
+            <p class="text-muted">
+              <i class="fas fa-scroll me-2"></i>
+              Your race has been recorded in the Book of Heroes
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

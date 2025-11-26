@@ -1,0 +1,9 @@
+<div class="home-page">
+  <div class="container py-4">
+    <h1 class="text-black mb-4">Discover Great Bars</h1>
+
+    <div class="bars-list">
+      <app-bar-card *ngFor="let bar of bars" [bar]="bar"></app-bar-card>
+    </div>
+  </div>
+</div>

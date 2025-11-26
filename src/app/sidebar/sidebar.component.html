@@ -1,0 +1,23 @@
+<div class="sidebar-backdrop" [class.show]="isOpen()" (click)="onClose()"></div>
+
+<div class="sidebar bg-dark text-white" [class.open]="isOpen()">
+  <div class="sidebar-header p-4 border-bottom border-secondary">
+    <button
+      class="btn btn-link text-white fs-4 p-0 border-0"
+      (click)="onClose()"
+      aria-label="Close menu"
+    >
+      <i class="fas fa-chevron-left"></i>
+    </button>
+  </div>
+
+  <nav class="sidebar-menu">
+    <button
+      *ngFor="let item of menuItems"
+      class="sidebar-item btn btn-link text-white text-start w-100 border-0 border-bottom border-secondary py-3 px-4"
+      (click)="onMenuItemClick(item)"
+    >
+      {{ item.label }}
+    </button>
+  </nav>
+</div>

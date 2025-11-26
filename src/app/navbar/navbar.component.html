@@ -1,0 +1,37 @@
+<nav class="navbar navbar-dark bg-dark shadow-sm">
+  <div class="container-fluid">
+    <button
+      class="btn btn-link text-white fs-4 p-0 border-0"
+      (click)="onBurgerMenuClick()"
+      aria-label="Menu"
+    >
+      <i class="fas fa-bars"></i>
+    </button>
+
+    <span
+      class="navbar-brand position-absolute start-50 translate-middle-x fw-bold text-uppercase"
+      (click)="onLogoClick()"
+      style="cursor: pointer"
+    >
+      <img src="/bnb-logo.png" alt="" style="max-width: 60px" />
+    </span>
+
+    <div class="d-flex gap-3">
+      <button
+        class="btn btn-link p-0 border-0 like-btn-navbar"
+        (click)="onFavoritesClick()"
+        aria-label="Favorites"
+      >
+        <img src="icons/like_icon.png" alt="Like" class="like-icon-navbar" />
+      </button>
+
+      <button
+        class="btn btn-link text-white fs-4 p-0 border-0"
+        (click)="onUserProfileClick()"
+        aria-label="User Profile"
+      >
+        <i class="fas fa-user-circle"></i>
+      </button>
+    </div>
+  </div>
+</nav>

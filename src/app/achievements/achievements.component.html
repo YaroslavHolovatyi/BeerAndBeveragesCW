@@ -1,0 +1,56 @@
+<div class="achievements-page">
+  <div class="container py-4">
+    <h1 class="text-white mb-4">Achievements</h1>
+
+    <!-- Not Logged In Message -->
+    <div *ngIf="!isLoggedIn" class="login-message-container">
+      <div class="login-message bg-dark text-white border border-secondary rounded p-5 text-center">
+        <i class="fas fa-lock fa-4x mb-4" style="color: #ffd700"></i>
+        <h3 class="mb-3">Login Required</h3>
+        <p class="mb-4">In order to get achievements, you need to be logged in.</p>
+        <button class="btn btn-success btn-lg" (click)="login()">
+          <i class="fas fa-sign-in-alt me-2"></i>
+          Login
+        </button>
+      </div>
+    </div>
+
+    <!-- Achievements Grid -->
+    <div *ngIf="isLoggedIn" class="achievements-grid">
+      <div
+        *ngFor="let achievement of achievements"
+        class="achievement-card bg-dark text-white border border-secondary rounded p-4"
+        [class.unlocked]="achievement.unlocked"
+        [class.locked]="!achievement.unlocked"
+      >
+        <div class="achievement-icon mb-3">
+          <img [src]="achievement.icon" [alt]="achievement.title" class="icon-image" />
+        </div>
+        <h4 class="achievement-title mb-2">{{ achievement.title }}</h4>
+        <p class="achievement-description mb-3">{{ achievement.description }}</p>
+
+        <div
+          *ngIf="!achievement.unlocked && achievement.progress !== undefined"
+          class="progress-section"
+        >
+          <div class="progress" style="height: 20px">
+            <div
+              class="progress-bar bg-success"
+              role="progressbar"
+              [style.width.%]="(achievement.progress! / achievement.maxProgress!) * 100"
+              [attr.aria-valuenow]="achievement.progress"
+              [attr.aria-valuemin]="0"
+              [attr.aria-valuemax]="achievement.maxProgress"
+            >
+              {{ achievement.progress }} / {{ achievement.maxProgress }}
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="achievement.unlocked" class="unlocked-badge">
+          <i class="fas fa-check-circle"></i> Unlocked!
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
