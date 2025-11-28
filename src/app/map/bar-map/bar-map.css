@@ -1,0 +1,17 @@
+.map-page {
+  height: calc(100vh - 52px); /* 56px is typical navbar height */
+  position: relative;
+  overflow: auto;
+}
+
+.map {
+  max-width: 95%;
+  position: absolute;
+  inset: 0;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: contrast(1.05);
+  margin-left: 2.5%;
+  background-image: url('/Ukraine_dnd_map.png');
+}
