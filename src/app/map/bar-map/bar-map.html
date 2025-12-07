@@ -1,4 +1,22 @@
 <div class="map-page">
-  <div class="map" (click)="onMapClick($event)"></div>
-  <h2>Hello world</h2>
+  <div class="map" (click)="onMapClick($event)">
+    <div
+      *ngFor="let city of cities"
+      class="city-marker"
+      [class.selected]="selectedCity?.id === city.id"
+      [style.left.%]="city.x"
+      [style.top.%]="city.y"
+      (click)="onCityClick(city, $event)"
+      [title]="city.name"
+    >
+      <img
+        alt="city image"
+        [src]="city.icon"
+        [alt]="city.name + ' icon'"
+        [title]="city.name"
+        class="city-icon"
+      />
+      <span class="city-name">{{ city.name }}</span>
+    </div>
+  </div>
 </div>

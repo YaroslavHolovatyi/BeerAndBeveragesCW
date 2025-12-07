@@ -59,38 +59,25 @@
               />
             </div>
 
-            <!-- Main City Field with Autocomplete -->
+            <!-- Main City Field with Map Button -->
             <div class="mb-4">
               <label for="mainCity" class="form-label">
                 <i class="fas fa-map-marker-alt me-2"></i>Main City
               </label>
-              <div class="position-relative">
+              <div class="d-flex gap-2">
                 <input
                   type="text"
                   class="form-control bg-secondary text-white border-secondary"
                   id="mainCity"
                   [(ngModel)]="mainCity"
                   name="mainCity"
-                  (input)="onCityInput($event)"
-                  placeholder="Start typing city name..."
-                  autocomplete="off"
+                  placeholder="Select your city from map..."
+                  readonly
                   required
                 />
-                <div
-                  *ngIf="showCityDropdown"
-                  class="city-dropdown bg-dark border border-secondary rounded mt-1 position-absolute w-100"
-                  style="z-index: 1000; max-height: 200px; overflow-y: auto"
-                >
-                  <button
-                    *ngFor="let city of filteredCities"
-                    type="button"
-                    class="dropdown-item text-white bg-dark border-0 text-start p-2"
-                    (click)="selectCity(city)"
-                    style="cursor: pointer"
-                  >
-                    {{ city }}
-                  </button>
-                </div>
+                <button type="button" class="btn btn-warning map-button" (click)="openCityModal()">
+                  <i class="fas fa-map me-2"></i>Select on Map
+                </button>
               </div>
             </div>
 
@@ -152,3 +139,13 @@
     </div>
   </div>
 </div>
+
+<!-- City Selector Modal -->
+<app-city-selector-modal
+  [isOpen]="showCityModal"
+  [title]="'Select Your Starting City'"
+  [initialCity]="selectedCityObj"
+  (cityConfirmed)="onCityConfirmed($event)"
+  (modalClosed)="onModalClosed()"
+>
+</app-city-selector-modal>

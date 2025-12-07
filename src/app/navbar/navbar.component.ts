@@ -1,18 +1,36 @@
-import { Component, input, output } from '@angular/core';
+import { Component, input, output, OnInit, OnDestroy } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { AuthService } from '../services/auth.service';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css',
 })
-export class NavbarComponent {
+export class NavbarComponent implements OnInit, OnDestroy {
   isSidebarOpen = input<boolean>(false);
   toggleSidebar = output<void>();
 
-  constructor(private router: Router) {}
+  isAuthenticated = false;
+  private destroy$ = new Subject<void>();
+
+  constructor(private router: Router, private authService: AuthService) {}
+
+  ngOnInit() {
+    // Subscribe to authentication state
+    this.authService.currentUser$.pipe(takeUntil(this.destroy$)).subscribe((user) => {
+      this.isAuthenticated = user !== null;
+    });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 
   onBurgerMenuClick() {
     this.toggleSidebar.emit();
@@ -28,7 +46,12 @@ export class NavbarComponent {
   }
 
   onUserProfileClick() {
-    // TODO: Check if user is logged in, if not navigate to login
-    this.router.navigate(['/login']);
+    if (this.isAuthenticated) {
+      // User is logged in, navigate to profile
+      this.router.navigate(['/profile']);
+    } else {
+      // User is not logged in, navigate to login
+      this.router.navigate(['/login']);
+    }
   }
 }

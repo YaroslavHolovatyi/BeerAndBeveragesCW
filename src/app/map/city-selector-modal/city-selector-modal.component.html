@@ -1,0 +1,29 @@
+<div class="modal-backdrop" *ngIf="isOpen" (click)="close()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2 class="modal-title">{{ title }}</h2>
+      <button class="close-button" (click)="close()" title="Close modal">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <app-bar-map [initialCity]="initialCity" (citySelected)="onCitySelected($event)">
+      </app-bar-map>
+
+      <div class="selection-info" *ngIf="selectedCity">
+        <i class="fas fa-map-marker-alt"></i>
+        <span
+          >Selected: <strong>{{ selectedCity.name }}</strong></span
+        >
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="close()">Cancel</button>
+      <button class="btn btn-primary" (click)="confirmSelection()" [disabled]="!selectedCity">
+        Confirm Selection
+      </button>
+    </div>
+  </div>
+</div>

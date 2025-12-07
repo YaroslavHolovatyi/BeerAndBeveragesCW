@@ -2,11 +2,13 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BarCardComponent, Bar } from '../bar-card/bar-card.component';
+import { CitySelectorModalComponent } from '../map/city-selector-modal/city-selector-modal.component';
+import { City } from '../shared/cities';
 
 @Component({
   selector: 'app-bars-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, BarCardComponent],
+  imports: [CommonModule, FormsModule, BarCardComponent, CitySelectorModalComponent],
   templateUrl: './bars-list.component.html',
   styleUrl: './bars-list.component.css',
 })
@@ -47,8 +49,10 @@ export class BarsListComponent {
   ];
 
   selectedCity = '';
+  selectedCityObj: City | null = null;
   filteredCities: string[] = [];
   showCityDropdown = false;
+  showCityModal = false;
 
   drinkTypes = {
     beer: false,
@@ -141,6 +145,21 @@ export class BarsListComponent {
     this.applyFilters();
   }
 
+  openCityModal() {
+    this.showCityModal = true;
+  }
+
+  onCityConfirmed(city: City) {
+    this.selectedCityObj = city;
+    this.selectedCity = city.name;
+    this.showCityModal = false;
+    this.applyFilters();
+  }
+
+  onModalClosed() {
+    this.showCityModal = false;
+  }
+
   onDrinkTypeChange() {
     this.applyFilters();
   }
@@ -155,6 +174,7 @@ export class BarsListComponent {
 
   clearFilters() {
     this.selectedCity = '';
+    this.selectedCityObj = null;
     this.drinkTypes = {
       beer: false,
       wine: false,

@@ -14,10 +14,21 @@
 
 .city-dropdown {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.city-dropdown-item {
+  cursor: pointer;
 }
 
 .dropdown-item:hover {
   background-color: #4caf50 !important;
+}
+
+.map-button-small {
+  min-width: 100px;
 }
 
 .form-check-input:checked {

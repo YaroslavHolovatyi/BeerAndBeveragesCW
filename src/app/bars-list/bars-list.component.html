@@ -8,31 +8,38 @@
         <!-- City Autocomplete -->
         <div class="col-md-6">
           <label for="cityInput" class="form-label">City</label>
-          <div class="position-relative">
-            <input
-              type="text"
-              id="cityInput"
-              class="form-control bg-dark text-white border-secondary"
-              placeholder="Start typing city name..."
-              [(ngModel)]="selectedCity"
-              (input)="onCityInput($event)"
-              autocomplete="off"
-            />
-            <div
-              *ngIf="showCityDropdown"
-              class="city-dropdown bg-dark border border-secondary rounded mt-1 position-absolute w-100"
-              style="z-index: 1000; max-height: 200px; overflow-y: auto"
-            >
-              <button
-                *ngFor="let city of filteredCities"
-                type="button"
-                class="dropdown-item text-white bg-dark border-0 text-start p-2"
-                (click)="selectCity(city)"
-                style="cursor: pointer"
+          <div class="d-flex gap-2">
+            <div class="position-relative flex-grow-1">
+              <input
+                type="text"
+                id="cityInput"
+                class="form-control bg-dark text-white border-secondary"
+                placeholder="Start typing city name..."
+                [(ngModel)]="selectedCity"
+                (input)="onCityInput($event)"
+                autocomplete="off"
+              />
+              <div
+                *ngIf="showCityDropdown"
+                class="city-dropdown bg-dark border border-secondary rounded mt-1 position-absolute w-100"
               >
-                {{ city }}
-              </button>
+                <button
+                  *ngFor="let city of filteredCities"
+                  type="button"
+                  class="dropdown-item text-white bg-dark border-0 text-start p-2 city-dropdown-item"
+                  (click)="selectCity(city)"
+                >
+                  {{ city }}
+                </button>
+              </div>
             </div>
+            <button
+              type="button"
+              class="btn btn-warning map-button-small"
+              (click)="openCityModal()"
+            >
+              <i class="fas fa-map"></i> Map
+            </button>
           </div>
         </div>
 
@@ -97,3 +104,13 @@
     </div>
   </div>
 </div>
+
+<!-- City Selector Modal -->
+<app-city-selector-modal
+  [isOpen]="showCityModal"
+  [title]="'Select City to Find Bars'"
+  [initialCity]="selectedCityObj"
+  (cityConfirmed)="onCityConfirmed($event)"
+  (modalClosed)="onModalClosed()"
+>
+</app-city-selector-modal>

@@ -2,11 +2,14 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { CitySelectorModalComponent } from '../map/city-selector-modal/city-selector-modal.component';
+import { City } from '../shared/cities';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-signup',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, CitySelectorModalComponent],
   templateUrl: './signup.component.html',
   styleUrl: './signup.component.css',
 })
@@ -17,66 +20,25 @@ export class SignupComponent {
   firstName = '';
   lastName = '';
   mainCity = '';
+  selectedCityObj: City | null = null;
   errorMessage = '';
+  showCityModal = false;
+  isLoading = false;
 
-  ukrainianCities = [
-    'Kyiv',
-    'Kharkiv',
-    'Odesa',
-    'Dnipro',
-    'Donetsk',
-    'Zaporizhzhia',
-    'Lviv',
-    'Kryvyi Rih',
-    'Mykolaiv',
-    'Mariupol',
-    'Luhansk',
-    'Vinnytsia',
-    'Simferopol',
-    'Sevastopol',
-    'Makiivka',
-    'Kherson',
-    'Poltava',
-    'Chernihiv',
-    'Cherkasy',
-    'Zhytomyr',
-    'Sumy',
-    'Khmelnytskyi',
-    'Chernivtsi',
-    'Rivne',
-    'Kamianske',
-    'Kropyvnytskyi',
-    'Ivano-Frankivsk',
-    'Kremenchuk',
-    'Ternopil',
-    'Lutsk',
-    'Bila Tserkva',
-    'Uzhhorod',
-  ];
+  constructor(private router: Router, private authService: AuthService) {}
 
-  filteredCities: string[] = [];
-  showCityDropdown = false;
-
-  constructor(private router: Router) {}
-
-  onCityInput(event: Event) {
-    const input = (event.target as HTMLInputElement).value;
-    this.mainCity = input;
-
-    if (input.length > 0) {
-      this.filteredCities = this.ukrainianCities.filter((city) =>
-        city.toLowerCase().includes(input.toLowerCase())
-      );
-      this.showCityDropdown = this.filteredCities.length > 0;
-    } else {
-      this.filteredCities = [];
-      this.showCityDropdown = false;
-    }
+  openCityModal() {
+    this.showCityModal = true;
   }
 
-  selectCity(city: string) {
-    this.mainCity = city;
-    this.showCityDropdown = false;
+  onCityConfirmed(city: City) {
+    this.selectedCityObj = city;
+    this.mainCity = city.name;
+    this.showCityModal = false;
+  }
+
+  onModalClosed() {
+    this.showCityModal = false;
   }
 
   onSignup() {
@@ -96,15 +58,28 @@ export class SignupComponent {
       return;
     }
 
-    // TODO: Implement actual signup logic
-    console.log('Signup attempt:', {
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    const userData = {
       email: this.email,
       firstName: this.firstName,
       lastName: this.lastName,
       mainCity: this.mainCity,
-    });
+    };
 
-    // Navigate to questionnaire after successful signup
-    this.router.navigate(['/questionnaire']);
+    this.authService.signup(userData).subscribe({
+      next: (user) => {
+        console.log('Signup successful:', user.email);
+        this.isLoading = false;
+        // Navigate to questionnaire after successful signup
+        this.router.navigate(['/questionnaire']);
+      },
+      error: (error) => {
+        console.error('Signup failed:', error);
+        this.errorMessage = 'Signup failed. Please try again.';
+        this.isLoading = false;
+      },
+    });
   }
 }

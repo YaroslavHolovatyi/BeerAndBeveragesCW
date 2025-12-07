@@ -1,0 +1,185 @@
+<div class="user-profile-page">
+  <div class="container py-4">
+    @if (user) {
+    <!-- Profile Header -->
+    <div class="profile-header bg-dark text-white border border-secondary rounded p-4 mb-4">
+      <div class="row">
+        <!-- Profile Image Section -->
+        <div class="col-md-3 text-center mb-3 mb-md-0">
+          <div class="profile-image-container">
+            <img
+              [src]="getProfileImage()"
+              alt="user image"
+              [alt]="getDisplayName() + ' profile picture'"
+              [title]="getDisplayName()"
+              class="profile-image"
+            />
+            @if (user.race) {
+            <div class="race-badge">
+              <i class="fas fa-dragon"></i>
+              {{ user.race }}
+            </div>
+            }
+          </div>
+        </div>
+
+        <!-- Profile Info Section -->
+        <div class="col-md-9">
+          <div class="d-flex justify-content-between align-items-start mb-3">
+            <div>
+              <h1 class="profile-name mb-2">{{ getDisplayName() }}</h1>
+              @if (user && user.nickname && user.lastName) {
+              <p class="text-muted mb-0">{{ getFullName() }}</p>
+              }
+            </div>
+            <div class="d-flex gap-2">
+              <button class="btn btn-warning" (click)="editProfile()">
+                <i class="fas fa-edit"></i> Edit Profile
+              </button>
+              <button class="btn btn-outline-danger" (click)="logout()">
+                <i class="fas fa-sign-out-alt"></i> Logout
+              </button>
+            </div>
+          </div>
+
+          <div class="profile-details">
+            <div class="row g-3">
+              <!-- Email -->
+              <div class="col-md-6">
+                <div class="detail-item">
+                  <i class="fas fa-envelope text-warning"></i>
+                  <div class="detail-content">
+                    <span class="detail-label">Email</span>
+                    <span class="detail-value">{{ user.email }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Main City -->
+              <div class="col-md-6">
+                <div class="detail-item">
+                  <i class="fas fa-home text-warning"></i>
+                  <div class="detail-content">
+                    <span class="detail-label">Main City</span>
+                    <span class="detail-value">{{ user.mainCity }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Current City -->
+              <div class="col-md-6">
+                <div class="detail-item">
+                  <i class="fas fa-map-marker-alt text-warning"></i>
+                  <div class="detail-content">
+                    <span class="detail-label">Current City</span>
+                    <span class="detail-value">{{ user.currentCity }}</span>
+                  </div>
+                  <button
+                    class="btn btn-sm btn-outline-warning ms-2"
+                    (click)="changeLocation()"
+                    title="Change current location"
+                  >
+                    <i class="fas fa-map"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Race -->
+              @if (user.race) {
+              <div class="col-md-6">
+                <div class="detail-item">
+                  <i class="fas fa-user-shield text-warning"></i>
+                  <div class="detail-content">
+                    <span class="detail-label">Race</span>
+                    <span class="detail-value">{{ user.race }}</span>
+                  </div>
+                </div>
+              </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Favorite Bars Section -->
+    <div class="favorite-bars-section">
+      <div class="section-header mb-4">
+        <h2 class="text-white">
+          <i class="fas fa-heart text-danger"></i>
+          Favorite Taverns
+        </h2>
+        <p class="text-muted">Your most visited and beloved establishments</p>
+      </div>
+
+      @if (favoriteBars.length > 0) {
+      <div class="row g-4">
+        @for (bar of favoriteBars; track bar.id) {
+        <div class="col-md-4">
+          <div
+            class="favorite-bar-card bg-dark border border-secondary rounded"
+            (click)="navigateToBar(bar.id)"
+          >
+            <div class="bar-image-container">
+              <img
+                [src]="bar.imageUrl"
+                [alt]="bar.name + ' image'"
+                [title]="bar.name"
+                alt="user image"
+                class="bar-image"
+              />
+              <div class="visit-badge">
+                <i class="fas fa-walking"></i>
+                {{ bar.timesVisited }} visits
+              </div>
+            </div>
+
+            <div class="bar-card-body p-3">
+              <h3 class="bar-name">{{ bar.name }}</h3>
+
+              <div class="bar-rating mb-2">
+                <i class="fas fa-star text-warning"></i>
+                <span>{{ bar.rating }}</span>
+              </div>
+
+              <div class="bar-info">
+                <div class="info-item">
+                  <i class="fas fa-map-marker-alt text-warning"></i>
+                  <span>{{ bar.address }}</span>
+                </div>
+
+                <div class="info-item">
+                  <i class="fas fa-phone text-warning"></i>
+                  <span>{{ bar.phone }}</span>
+                </div>
+
+                <div class="info-item">
+                  <i class="fas fa-clock text-warning"></i>
+                  <span>{{ bar.workHours }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+      } @else {
+      <div class="no-favorites bg-dark border border-secondary rounded p-5 text-center">
+        <i class="fas fa-heart-broken fa-3x text-muted mb-3"></i>
+        <p class="text-muted mb-0">No favorite taverns yet. Start your journey!</p>
+      </div>
+      }
+    </div>
+    }
+  </div>
+</div>
+
+<!-- City Selector Modal -->
+<app-city-selector-modal
+  [isOpen]="showCityModal"
+  [title]="'Change Your Current Location'"
+  [initialCity]="selectedCityObj"
+  (cityConfirmed)="onCityConfirmed($event)"
+  (modalClosed)="onModalClosed()"
+>
+</app-city-selector-modal>

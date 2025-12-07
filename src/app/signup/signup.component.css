@@ -48,6 +48,10 @@
   background-color: #4caf50 !important;
 }
 
+.map-button {
+  min-width: 120px;
+}
+
 a {
   text-decoration: none;
 }

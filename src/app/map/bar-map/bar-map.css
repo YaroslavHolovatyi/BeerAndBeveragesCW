@@ -1,17 +1,99 @@
 .map-page {
-  height: calc(100vh - 52px); /* 56px is typical navbar height */
+  width: 100%;
+  height: 100%;
+  min-height: 500px;
   position: relative;
-  overflow: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #0a0a0a;
 }
 
 .map {
-  max-width: 95%;
-  position: absolute;
-  inset: 0;
+  position: relative;
+  width: 95%;
+  padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
   filter: contrast(1.05);
-  margin-left: 2.5%;
   background-image: url('/Ukraine_dnd_map.png');
+}
+
+.city-marker {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  transition: transform 0.2s ease;
+  z-index: 10;
+}
+
+.city-marker:hover {
+  transform: translate(-50%, -50%) scale(1.15);
+  z-index: 20;
+}
+
+.city-marker.selected {
+  z-index: 30;
+}
+
+.city-icon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  transition: filter 0.2s ease;
+}
+
+.city-marker:hover .city-icon {
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+}
+
+.city-marker.selected .city-icon {
+  filter: drop-shadow(0 0 12px rgba(255, 215, 0, 0.8)) drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+}
+
+.city-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: #333;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 2px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.2s ease;
+}
+
+.city-marker:hover .city-name {
+  background-color: rgba(255, 255, 255, 1);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+}
+
+.city-marker.selected .city-name {
+  background-color: rgba(255, 215, 0, 0.95);
+  color: #000;
+  font-weight: 700;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+}
+
+@media (max-width: 768px) {
+  .map {
+    max-width: 100%;
+  }
+
+  .city-icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .city-name {
+    font-size: 10px;
+    padding: 1px 4px;
+  }
 }
