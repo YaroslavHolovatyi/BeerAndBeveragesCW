@@ -10,6 +10,7 @@ import { QuestionnaireComponent } from './questionnaire/questionnaire.component'
 import { RaceResultComponent } from './race-result/race-result.component';
 import { BarMap } from './map/bar-map/bar-map';
 import { UserProfileComponent } from './user-profile/user-profile.component';
+import { CheckSplitComponent } from './check-split/check-split.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -23,5 +24,6 @@ export const routes: Routes = [
   { path: 'race-result', component: RaceResultComponent },
   { path: 'bar-map', component: BarMap },
   { path: 'profile', component: UserProfileComponent },
+  { path: 'check-split', component: CheckSplitComponent },
   { path: '**', redirectTo: '' },
 ];

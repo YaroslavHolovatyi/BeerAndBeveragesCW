@@ -16,7 +16,7 @@ export class SidebarComponent {
   menuItems = [
     { label: 'List of Pubs', route: '/pubs' },
     { label: 'Random Pub', route: '/random' },
-    { label: 'Check Time', route: '/check-time' },
+    { label: 'Split The Tavern Bill', route: '/check-split' },
     { label: 'Achievements', route: '/achievements' },
     { label: 'About', route: '/about' },
   ];

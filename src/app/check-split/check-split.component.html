@@ -1,0 +1,240 @@
+<div class="check-split-page">
+  <div class="container py-4">
+    <div class="page-header mb-4">
+      <h1 class="text-white">
+        <i class="fas fa-receipt"></i>
+        Split The Check
+      </h1>
+      <p class="text-muted">Upload receipt and split the bill among friends</p>
+    </div>
+
+    <!-- Step 1: Upload Receipt -->
+    @if (!receipt?.parsed) {
+    <div class="upload-section bg-dark border border-secondary rounded p-4 mb-4">
+      <h3 class="text-white mb-3">
+        <span class="step-number">1</span>
+        Upload Receipt Image
+      </h3>
+
+      <div class="upload-area" [class.has-image]="imagePreview">
+        @if (!imagePreview) {
+        <label for="receiptImage" class="upload-label">
+          <i class="fas fa-cloud-upload-alt fa-3x mb-3"></i>
+          <p class="mb-2">Click to upload or drag and drop</p>
+          <small class="text-muted">PNG, JPG up to 10MB</small>
+          <input
+            type="file"
+            id="receiptImage"
+            accept="image/*"
+            (change)="onImageSelected($event)"
+            hidden
+          />
+        </label>
+        } @else {
+        <div class="image-preview-container">
+          <img [src]="imagePreview" alt="Receipt preview" class="receipt-preview" />
+          <button
+            class="btn btn-danger btn-sm remove-image"
+            (click)="selectedImage = null; imagePreview = null"
+            title="Remove image"
+          >
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        }
+      </div>
+
+      @if (selectedImage && !isParsing) {
+      <button class="btn btn-primary btn-lg w-100 mt-3" (click)="uploadAndParseReceipt()">
+        <i class="fas fa-magic"></i>
+        Parse Receipt with AI
+      </button>
+      } @if (isParsing) {
+      <div class="parsing-loader text-center mt-3">
+        <div class="spinner-border text-warning" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="text-white mt-2">Analyzing receipt with AI...</p>
+      </div>
+      }
+    </div>
+    }
+
+    <!-- Step 2: Add Participants -->
+    @if (receipt?.parsed) {
+    <div class="participants-section bg-dark border border-secondary rounded p-4 mb-4">
+      <h3 class="text-white mb-3">
+        <span class="step-number">2</span>
+        Add Participants
+      </h3>
+
+      <div class="add-participant-form mb-3">
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control bg-secondary text-white border-secondary"
+            placeholder="Enter participant name..."
+            [(ngModel)]="newParticipantName"
+            (keyup.enter)="addParticipant()"
+          />
+          <button
+            class="btn btn-success"
+            (click)="addParticipant()"
+            [disabled]="!newParticipantName.trim()"
+          >
+            <i class="fas fa-user-plus"></i>
+            Add
+          </button>
+        </div>
+      </div>
+
+      <div class="participants-list">
+        @if (receipt && receipt.participants.length === 0) {
+        <p class="text-muted text-center py-3">
+          No participants yet. Add people to split the bill.
+        </p>
+        } @else if (receipt) {
+        <div class="row g-2">
+          @for (participant of receipt.participants; track participant.id) {
+          <div class="col-md-4">
+            <div class="participant-card">
+              <div class="participant-info">
+                <i class="fas fa-user-circle text-warning"></i>
+                <span class="participant-name">{{ participant.name }}</span>
+              </div>
+              <div class="participant-amount">₴{{ participant.totalAmount.toFixed(2) }}</div>
+              <button
+                class="btn btn-sm btn-outline-danger"
+                (click)="removeParticipant(participant.id)"
+                title="Remove participant"
+              >
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+          }
+        </div>
+        }
+      </div>
+    </div>
+
+    <!-- Step 3: Assign Items -->
+    <div class="items-section bg-dark border border-secondary rounded p-4 mb-4">
+      <h3 class="text-white mb-3">
+        <span class="step-number">3</span>
+        Assign Items to Participants
+      </h3>
+
+      @if (receipt && receipt.barName) {
+      <div class="receipt-info mb-3">
+        <i class="fas fa-store text-warning"></i>
+        <strong>{{ receipt.barName }}</strong>
+        @if (receipt.date) {
+        <span class="text-muted ms-2">{{ receipt.date | date : 'short' }}</span>
+        }
+      </div>
+      }
+
+      <div class="items-list">
+        @if (receipt) { @for (item of receipt.items; track item.id) {
+        <div class="item-card">
+          <div class="item-header">
+            <div class="item-details">
+              <h5 class="item-name">{{ item.name }}</h5>
+              <div class="item-meta">
+                <span class="quantity">{{ item.quantity }}x</span>
+                <span class="unit-price">₴{{ item.unitPrice.toFixed(2) }} each</span>
+              </div>
+            </div>
+            <div class="item-total">₴{{ item.totalPrice.toFixed(2) }}</div>
+          </div>
+
+          @if (receipt && receipt.participants.length > 0) {
+          <div class="item-assignment">
+            <label class="text-muted small">Assign to:</label>
+            <div class="assignment-buttons">
+              @for (participant of receipt.participants; track participant.id) {
+              <button
+                class="btn btn-sm assignment-btn"
+                [class.btn-warning]="isItemAssignedTo(item.id, participant.id)"
+                [class.btn-outline-secondary]="!isItemAssignedTo(item.id, participant.id)"
+                (click)="toggleItemAssignment(item.id, participant.id)"
+              >
+                {{ participant.name }}
+              </button>
+              }
+            </div>
+
+            @if (getAssignedParticipantsCount(item.id) > 0) {
+            <div class="split-info">
+              <small class="text-success">
+                <i class="fas fa-check-circle"></i>
+                Split between {{ getAssignedParticipantsCount(item.id) }}
+                {{ getAssignedParticipantsCount(item.id) === 1 ? 'person' : 'people' }}
+                (₴{{ (item.totalPrice / getAssignedParticipantsCount(item.id)).toFixed(2) }} each)
+              </small>
+            </div>
+            }
+          </div>
+          }
+        </div>
+        } }
+      </div>
+    </div>
+
+    <!-- Summary Section -->
+    <div class="summary-section bg-dark border border-secondary rounded p-4 mb-4">
+      <h3 class="text-white mb-3">
+        <i class="fas fa-calculator"></i>
+        Summary
+      </h3>
+
+      <div class="total-amount mb-4">
+        <span>Total Amount:</span>
+        <span class="amount">₴{{ receipt ? receipt.totalAmount.toFixed(2) : '0.00' }}</span>
+      </div>
+
+      @if (receipt && receipt.participants.length > 0) {
+      <div class="participants-summary">
+        @for (participant of receipt.participants; track participant.id) {
+        <div class="participant-summary-card">
+          <div class="summary-header">
+            <h5 class="participant-name">
+              <i class="fas fa-user-circle text-warning"></i>
+              {{ participant.name }}
+            </h5>
+            <div class="participant-total">₴{{ participant.totalAmount.toFixed(2) }}</div>
+          </div>
+
+          @if (participant.items.length > 0) {
+          <div class="summary-items">
+            @for (item of participant.items; track item.itemId) {
+            <div class="summary-item">
+              <span class="item-name">{{ item.itemName }}</span>
+              <span class="item-share">({{ item.sharePercentage.toFixed(0) }}%)</span>
+              <span class="item-amount">₴{{ item.amount.toFixed(2) }}</span>
+            </div>
+            }
+          </div>
+          } @else {
+          <p class="text-muted small mb-0">No items assigned</p>
+          }
+        </div>
+        }
+      </div>
+      }
+
+      <div class="action-buttons mt-4">
+        <button class="btn btn-success btn-lg" (click)="exportSummary()">
+          <i class="fas fa-download"></i>
+          Export Summary
+        </button>
+        <button class="btn btn-outline-warning btn-lg" (click)="resetReceipt()">
+          <i class="fas fa-redo"></i>
+          Start Over
+        </button>
+      </div>
+    </div>
+    }
+  </div>
+</div>
