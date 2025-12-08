@@ -1,0 +1,17 @@
+<div class="d20-wrapper">
+  <canvas #rendererCanvas class="dice-canvas"></canvas>
+
+  @if (!hideControls) {
+  <div class="controls">
+    <button (click)="roll()" [disabled]="isRolling">
+      {{ isRolling ? 'Rolling...' : 'Roll D20' }}
+    </button>
+
+    @if (lastResult !== null) {
+    <div class="result">
+      Result: <span>{{ lastResult }}</span>
+    </div>
+    }
+  </div>
+  }
+</div>

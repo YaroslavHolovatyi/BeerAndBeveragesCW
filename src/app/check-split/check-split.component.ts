@@ -1,16 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Receipt, ReceiptItem, ReceiptParticipant } from '../shared/receipt.model';
+import { D20Dice } from '../d20-dice/d20-dice';
 
 @Component({
   selector: 'app-check-split',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, D20Dice],
   templateUrl: './check-split.component.html',
   styleUrl: './check-split.component.css',
 })
 export class CheckSplitComponent implements OnInit {
+  @ViewChild(D20Dice) diceComponent?: D20Dice;
+
   receipt: Receipt | null = null;
   selectedImage: File | null = null;
   imagePreview: string | null = null;
@@ -22,6 +25,13 @@ export class CheckSplitComponent implements OnInit {
 
   selectedItemId: string | null = null;
   editingShares: { [key: string]: { [participantId: string]: number } } = {};
+
+  // D20 Game state
+  showDiceGame = false;
+  diceGameActive = false;
+  participantNumbers: { id: string; name: string; number: number | null }[] = [];
+  currentRollingIndex = 0;
+  gameWinner: string | null = null;
 
   constructor() {}
 
@@ -255,6 +265,105 @@ export class CheckSplitComponent implements OnInit {
     if (!this.receipt) return 0;
     const item = this.receipt.items.find((i) => i.id === itemId);
     return item ? item.assignedTo.length : 0;
+  }
+
+  // D20 Game Methods
+  startDiceGame() {
+    if (!this.receipt || this.receipt.participants.length === 0) {
+      alert('Please add participants first!');
+      return;
+    }
+
+    this.showDiceGame = true;
+    this.diceGameActive = false;
+    this.gameWinner = null;
+    this.currentRollingIndex = 0;
+
+    // Initialize participant numbers
+    this.participantNumbers = this.receipt.participants.map((p) => ({
+      id: p.id,
+      name: p.name,
+      number: null,
+    }));
+  }
+
+  rollForParticipants() {
+    if (!this.receipt || this.participantNumbers.length === 0) return;
+
+    this.diceGameActive = true;
+    this.currentRollingIndex = 0;
+    this.gameWinner = null;
+
+    // Reset all numbers
+    this.participantNumbers.forEach((p) => (p.number = null));
+
+    // Start rolling for first participant
+    this.rollNextParticipant();
+  }
+
+  rollNextParticipant() {
+    if (this.currentRollingIndex < this.participantNumbers.length && this.diceComponent) {
+      this.diceComponent.roll();
+    }
+  }
+
+  onDiceRollComplete(result: number) {
+    if (!this.diceGameActive || this.currentRollingIndex >= this.participantNumbers.length) {
+      return;
+    }
+
+    // Assign the result to current participant
+    this.participantNumbers[this.currentRollingIndex].number = result;
+    this.currentRollingIndex++;
+
+    // Check if we need to roll for more participants
+    if (this.currentRollingIndex < this.participantNumbers.length) {
+      // Wait a bit before rolling for next participant
+      setTimeout(() => {
+        this.rollNextParticipant();
+      }, 1500);
+    } else {
+      // All participants have rolled, determine winner (highest number)
+      this.determineWinner();
+    }
+  }
+
+  determineWinner() {
+    if (this.participantNumbers.length === 0) return;
+
+    // Find participant with highest number
+    let maxNumber = -1;
+    let winnerId = '';
+
+    this.participantNumbers.forEach((p) => {
+      if (p.number !== null && p.number > maxNumber) {
+        maxNumber = p.number;
+        winnerId = p.id;
+      }
+    });
+
+    if (winnerId) {
+      const winner = this.participantNumbers.find((p) => p.id === winnerId);
+      if (winner) {
+        this.gameWinner = winner.name;
+        this.diceGameActive = false;
+      }
+    }
+  }
+
+  closeDiceGame() {
+    this.showDiceGame = false;
+    this.diceGameActive = false;
+    this.gameWinner = null;
+    this.participantNumbers = [];
+    this.currentRollingIndex = 0;
+  }
+
+  getCurrentRollingParticipant(): string | null {
+    if (this.diceGameActive && this.currentRollingIndex < this.participantNumbers.length) {
+      return this.participantNumbers[this.currentRollingIndex].name;
+    }
+    return null;
   }
 
   resetReceipt() {

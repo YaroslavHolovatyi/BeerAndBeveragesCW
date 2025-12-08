@@ -229,10 +229,94 @@
           <i class="fas fa-download"></i>
           Export Summary
         </button>
+        <button class="btn btn-warning btn-lg" (click)="startDiceGame()">
+          <i class="fas fa-dice-d20"></i>
+          Choose One to Pay for All
+        </button>
         <button class="btn btn-outline-warning btn-lg" (click)="resetReceipt()">
           <i class="fas fa-redo"></i>
           Start Over
         </button>
+      </div>
+    </div>
+    }
+
+    <!-- D20 Dice Game Modal -->
+    @if (showDiceGame) {
+    <div class="dice-game-overlay" (click)="closeDiceGame()">
+      <div class="dice-game-modal" (click)="$event.stopPropagation()">
+        <button class="close-modal" (click)="closeDiceGame()" title="Close">
+          <i class="fas fa-times"></i>
+        </button>
+
+        <h2 class="text-white text-center mb-4">
+          <i class="fas fa-dice-d20 text-warning"></i>
+          Who Pays for Everything?
+        </h2>
+
+        <div class="dice-container">
+          <app-d20-dice
+            [maxNumber]="participantNumbers.length > 0 ? participantNumbers.length * 5 : 20"
+            [hideControls]="true"
+            (rollComplete)="onDiceRollComplete($event)"
+          ></app-d20-dice>
+        </div>
+
+        @if (getCurrentRollingParticipant()) {
+        <div class="rolling-status text-center mb-3">
+          <h4 class="text-warning">
+            Rolling for: <strong>{{ getCurrentRollingParticipant() }}</strong>
+          </h4>
+        </div>
+        }
+
+        <div class="participants-rolls">
+          @for (participant of participantNumbers; track participant.id) {
+          <div
+            class="participant-roll-card"
+            [class.active]="
+              diceGameActive && participantNumbers.indexOf(participant) === currentRollingIndex
+            "
+            [class.winner]="gameWinner === participant.name"
+          >
+            <div class="participant-info">
+              <i class="fas fa-user-circle"></i>
+              <span class="name">{{ participant.name }}</span>
+            </div>
+            <div class="roll-result">
+              @if (participant.number !== null) {
+              <span class="number">{{ participant.number }}</span>
+              } @else if (diceGameActive && participantNumbers.indexOf(participant) ===
+              currentRollingIndex) {
+              <span class="rolling">Rolling...</span>
+              } @else {
+              <span class="waiting">—</span>
+              }
+            </div>
+            @if (gameWinner === participant.name) {
+            <div class="winner-badge"><i class="fas fa-trophy"></i> Pays!</div>
+            }
+          </div>
+          }
+        </div>
+
+        @if (!diceGameActive && !gameWinner) {
+        <button class="btn btn-warning btn-lg w-100 mt-3" (click)="rollForParticipants()">
+          <i class="fas fa-dice"></i>
+          Start Rolling!
+        </button>
+        } @if (gameWinner) {
+        <div class="winner-announcement">
+          <h3 class="text-center">
+            <i class="fas fa-star text-warning"></i>
+            <strong class="text-warning">{{ gameWinner }}</strong> pays for everyone!
+            <i class="fas fa-star text-warning"></i>
+          </h3>
+          <p class="text-center text-muted mb-3">
+            Total amount: ₴{{ receipt ? receipt.totalAmount.toFixed(2) : '0.00' }}
+          </p>
+        </div>
+        }
       </div>
     </div>
     }
