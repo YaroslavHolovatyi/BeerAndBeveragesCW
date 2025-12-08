@@ -47,6 +47,7 @@ export class D20Dice implements AfterViewInit, OnDestroy {
   // D20 face normals for positioning numbers correctly
   private faceNormals: THREE.Vector3[] = [];
   private numberSprites: THREE.Sprite[] = [];
+  private faceInfos: { center: THREE.Vector3; normal: THREE.Vector3 }[] = [];
 
   ngAfterViewInit(): void {
     // Use setTimeout to ensure canvas has proper dimensions
@@ -71,24 +72,18 @@ export class D20Dice implements AfterViewInit, OnDestroy {
 
   // --- ПУБЛІЧНИЙ МЕТОД ДЛЯ КНОПКИ ---
   roll(): void {
-    if (this.isRolling) {
-      return;
-    }
+    if (this.isRolling) return;
 
     this.isRolling = true;
     this.lastResult = null;
 
-    // Випадкове число 1–maxNumber
     this.pendingResult = this.randomInt(1, this.maxNumber);
 
-    // Налаштовуємо анімацію обертання
     this.rollStartTime = performance.now();
     this.startRotation.copy(this.diceMesh.rotation);
 
-    // Calculate target rotation to show the rolled number face-up
     const targetFaceRotation = this.getRotationForNumber(this.pendingResult);
 
-    // Add multiple full rotations for dramatic effect (4-6 full spins)
     const extraSpins = 4 + Math.random() * 2;
     this.targetRotation.set(
       targetFaceRotation.x + Math.PI * 2 * extraSpins,
@@ -99,33 +94,22 @@ export class D20Dice implements AfterViewInit, OnDestroy {
 
   // Calculate rotation needed to show a specific number face-up
   private getRotationForNumber(number: number): THREE.Euler {
-    // Icosahedron face orientations for numbers 1-20
-    // These rotations position each face to be facing the camera
-    const rotations: { [key: number]: [number, number, number] } = {
-      1: [0, 0, 0],
-      2: [1.107, 0, 0],
-      3: [2.034, 0, 0],
-      4: [-1.107, 0, 0],
-      5: [-2.034, 0, 0],
-      6: [0, 1.107, 0],
-      7: [0, 2.034, 0],
-      8: [0, -1.107, 0],
-      9: [0, -2.034, 0],
-      10: [0.553, 0.618, 0],
-      11: [0.553, -0.618, 0],
-      12: [-0.553, 0.618, 0],
-      13: [-0.553, -0.618, 0],
-      14: [1.107, 1.257, 0],
-      15: [1.107, -1.257, 0],
-      16: [-1.107, 1.257, 0],
-      17: [-1.107, -1.257, 0],
-      18: [2.034, 1.257, 0],
-      19: [2.034, -1.257, 0],
-      20: [Math.PI, 0, 0],
-    };
+    if (!this.faceInfos.length) {
+      // на всякий випадок
+      return new THREE.Euler(0, 0, 0);
+    }
 
-    const rot = rotations[number] || [0, 0, 0];
-    return new THREE.Euler(rot[0], rot[1], rot[2]);
+    // просте зіставлення: число 1 -> грань 0, 2 -> грань 1, ...
+    const faceIndex = (number - 1) % this.faceInfos.length;
+    const faceNormal = this.faceInfos[faceIndex].normal.clone().normalize();
+
+    // напрямок на камеру (камера дивиться з +Z на (0,0,0))
+    const targetNormal = new THREE.Vector3(0, 0, 1);
+
+    const q = new THREE.Quaternion().setFromUnitVectors(faceNormal, targetNormal);
+    const euler = new THREE.Euler().setFromQuaternion(q, 'XYZ');
+
+    return euler;
   }
 
   // --- ІНІЦІАЛІЗАЦІЯ СЦЕНИ ---
@@ -231,24 +215,25 @@ export class D20Dice implements AfterViewInit, OnDestroy {
       faces.push({ center, normal });
     }
 
-    // створення спрайтів
+    this.faceInfos = faces; // збережемо для getRotationForNumber
     this.numberSprites = [];
 
     for (let i = 0; i < 20 && i < faces.length; i++) {
       const number = i + 1;
       const face = faces[i];
 
+      // малюємо текст
       const canvas = document.createElement('canvas');
-      canvas.width = 128;
-      canvas.height = 128;
+      canvas.width = 256;
+      canvas.height = 256;
       const ctx = canvas.getContext('2d')!;
 
-      ctx.clearRect(0, 0, 128, 128);
+      ctx.clearRect(0, 0, 256, 256);
       ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 80px Arial';
+      ctx.font = 'bold 160px Arial';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(number.toString(), 64, 64);
+      ctx.fillText(number.toString(), 128, 140);
 
       const texture = new THREE.CanvasTexture(canvas);
       const spriteMaterial = new THREE.SpriteMaterial({
@@ -257,11 +242,15 @@ export class D20Dice implements AfterViewInit, OnDestroy {
         depthTest: true,
         depthWrite: false,
       });
+
       const sprite = new THREE.Sprite(spriteMaterial);
 
-      const offset = face.normal.clone().multiplyScalar(1.02);
-      sprite.position.copy(face.center.clone().add(offset));
-      sprite.scale.set(0.3, 0.3, 1);
+      // ВАЖЛИВО: витягуємо спрайт НАЗОВНІ
+      const centerOnSurface = face.center.clone().normalize().multiplyScalar(1.1);
+      const offset = face.normal.clone().multiplyScalar(0.1);
+      sprite.position.copy(centerOnSurface.add(offset));
+
+      sprite.scale.set(0.6, 0.6, 1);
 
       this.diceMesh.add(sprite);
       this.numberSprites.push(sprite);
