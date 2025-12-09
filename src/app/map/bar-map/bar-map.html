@@ -3,7 +3,7 @@
     <div
       *ngFor="let city of cities"
       class="city-marker"
-      [class.selected]="selectedCity?.id === city.id"
+      [class.selected]="selectedCity?.slug === city.slug"
       [style.left.%]="city.x"
       [style.top.%]="city.y"
       (click)="onCityClick(city, $event)"

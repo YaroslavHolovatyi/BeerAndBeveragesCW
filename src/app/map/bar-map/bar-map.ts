@@ -43,7 +43,7 @@ export class BarMap implements OnChanges {
 
   getIconForCity() {
     this.cities.forEach((city) => {
-      city.icon = `/cities_icons/${city.id}_icon.png`;
+      city.icon = `/cities_icons/${city.slug}_icon.png`;
     });
   }
 }
