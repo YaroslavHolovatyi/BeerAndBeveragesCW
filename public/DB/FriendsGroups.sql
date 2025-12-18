@@ -1,0 +1,14 @@
+use b_and_b;
+
+CREATE TABLE friend_groups (
+	id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+	owner_id BIGINT UNSIGNED NOT NULL,
+	name VARCHAR(50) NOT NULL,
+
+	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+	KEY idx_friend_groups_owner (owner_id),
+
+	FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
