@@ -1,0 +1,312 @@
+<div class="friends-container">
+  <div class="container py-4">
+    <h1 class="text-center mb-4">
+      <i class="fas fa-users me-2"></i>Friends
+    </h1>
+
+    <!-- Tabs -->
+    <ul class="nav nav-tabs mb-4">
+      <li class="nav-item">
+        <button
+          class="nav-link"
+          [class.active]="activeTab === 'friends'"
+          (click)="switchTab('friends')"
+        >
+          <i class="fas fa-user-friends me-2"></i>My Friends
+          <span class="badge bg-primary ms-2">{{ friends.length }}</span>
+        </button>
+      </li>
+      <li class="nav-item">
+        <button
+          class="nav-link"
+          [class.active]="activeTab === 'requests'"
+          (click)="switchTab('requests')"
+        >
+          <i class="fas fa-user-plus me-2"></i>Friend Requests
+          @if (receivedRequests.length > 0) {
+            <span class="badge bg-danger ms-2">{{ receivedRequests.length }}</span>
+          }
+        </button>
+      </li>
+    </ul>
+
+    <!-- Friends Tab -->
+    @if (activeTab === 'friends') {
+      <div class="tab-content">
+        @if (friends.length === 0) {
+          <div class="text-center py-5">
+            <i class="fas fa-user-friends fa-4x text-muted mb-3"></i>
+            <h3>No friends yet</h3>
+            <p class="text-muted">Switch to the Friend Requests tab to find and add friends!</p>
+          </div>
+        } @else {
+          <div class="row g-3">
+            @for (friend of friends; track friend.id) {
+              <div class="col-md-6 col-lg-4">
+                <div class="friend-card card">
+                  <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                      @if (friend.raceImage) {
+                        <img
+                          [src]="friend.raceImage"
+                          [alt]="friend.race"
+                          [title]="friend.nickname"
+                          class="friend-avatar rounded-circle me-3"
+                        />
+                      } @else {
+                        <div class="friend-avatar-placeholder rounded-circle me-3">
+                          <i class="fas fa-user"></i>
+                        </div>
+                      }
+                      <div class="flex-grow-1">
+                        <h5 class="mb-1">{{ friend.nickname }}</h5>
+                        @if (friend.firstName || friend.lastName) {
+                          <p class="text-muted small mb-1">
+                            {{ friend.firstName }} {{ friend.lastName }}
+                          </p>
+                        }
+                        @if (friend.currentCity) {
+                          <p class="text-muted small mb-0">
+                            <i class="fas fa-map-marker-alt me-1"></i>{{ friend.currentCity }}
+                          </p>
+                        }
+                      </div>
+                    </div>
+                    @if (friend.race) {
+                      <p class="text-muted small mb-2">
+                        <i class="fas fa-dragon me-1"></i>{{ friend.race }}
+                      </p>
+                    }
+                    <div class="d-flex gap-2">
+                      <button class="btn btn-sm btn-primary flex-grow-1">
+                        <i class="fas fa-comment me-1"></i>Message
+                      </button>
+                      <button
+                        class="btn btn-sm btn-outline-danger"
+                        (click)="removeFriend(friend.id)"
+                        title="Remove friend"
+                      >
+                        <i class="fas fa-user-times"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Friend Requests Tab -->
+    @if (activeTab === 'requests') {
+      <div class="tab-content">
+        <!-- Search for Users -->
+        <div class="search-section mb-4">
+          <h4 class="mb-3">
+            <i class="fas fa-search me-2"></i>Find Friends
+          </h4>
+          <div class="input-group mb-3">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Search by nickname or name..."
+              [(ngModel)]="searchQuery"
+              (input)="searchUsers()"
+            />
+            <button class="btn btn-primary" (click)="searchUsers()" title="Search">
+              <i class="fas fa-search"></i>
+            </button>
+          </div>
+
+          @if (isSearching) {
+            <div class="text-center py-3">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          } @else if (searchResults.length > 0) {
+            <div class="row g-3 mb-4">
+              @for (user of searchResults; track user.id) {
+                <div class="col-md-6 col-lg-4">
+                  <div class="friend-card card">
+                    <div class="card-body">
+                      <div class="d-flex align-items-center mb-3">
+                        @if (user.raceImage) {
+                          <img
+                            [src]="user.raceImage"
+                            [alt]="user.race"
+                            [title]="user.nickname"
+                            class="friend-avatar rounded-circle me-3"
+                          />
+                        } @else {
+                          <div class="friend-avatar-placeholder rounded-circle me-3">
+                            <i class="fas fa-user"></i>
+                          </div>
+                        }
+                        <div class="flex-grow-1">
+                          <h5 class="mb-1">{{ user.nickname }}</h5>
+                          @if (user.firstName) {
+                            <p class="text-muted small mb-1">{{ user.firstName }}</p>
+                          }
+                          @if (user.currentCity) {
+                            <p class="text-muted small mb-0">
+                              <i class="fas fa-map-marker-alt me-1"></i>{{ user.currentCity }}
+                            </p>
+                          }
+                        </div>
+                      </div>
+                      @if (isAlreadyFriend(user.id)) {
+                        <button class="btn btn-sm btn-secondary w-100" disabled>
+                          <i class="fas fa-check me-1"></i>Already Friends
+                        </button>
+                      } @else if (hasPendingRequest(user.id)) {
+                        <button class="btn btn-sm btn-warning w-100" disabled>
+                          <i class="fas fa-clock me-1"></i>Request Pending
+                        </button>
+                      } @else {
+                        <button
+                          class="btn btn-sm btn-primary w-100"
+                          (click)="sendFriendRequest(user.id)"
+                        >
+                          <i class="fas fa-user-plus me-1"></i>Add Friend
+                        </button>
+                      }
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        <hr class="my-4" />
+
+        <!-- Received Friend Requests -->
+        <div class="requests-section mb-4">
+          <h4 class="mb-3">
+            <i class="fas fa-inbox me-2"></i>Received Requests
+            @if (receivedRequests.length > 0) {
+              <span class="badge bg-danger ms-2">{{ receivedRequests.length }}</span>
+            }
+          </h4>
+          @if (receivedRequests.length === 0) {
+            <p class="text-muted">No pending requests</p>
+          } @else {
+            <div class="row g-3">
+              @for (request of receivedRequests; track request.id) {
+                <div class="col-md-6 col-lg-4">
+                  <div class="friend-card card border-primary">
+                    <div class="card-body">
+                      <div class="d-flex align-items-center mb-3">
+                        @if (request.fromUser.raceImage) {
+                          <img
+                            [src]="request.fromUser.raceImage"
+                            [alt]="request.fromUser.race"
+                            [title]="request.fromUser.nickname"
+                            class="friend-avatar rounded-circle me-3"
+                          />
+                        } @else {
+                          <div class="friend-avatar-placeholder rounded-circle me-3">
+                            <i class="fas fa-user"></i>
+                          </div>
+                        }
+                        <div class="flex-grow-1">
+                          <h5 class="mb-1">{{ request.fromUser.nickname }}</h5>
+                          @if (request.fromUser.firstName) {
+                            <p class="text-muted small mb-1">
+                              {{ request.fromUser.firstName }}
+                            </p>
+                          }
+                          @if (request.fromUser.currentCity) {
+                            <p class="text-muted small mb-0">
+                              <i class="fas fa-map-marker-alt me-1"></i
+                              >{{ request.fromUser.currentCity }}
+                            </p>
+                          }
+                        </div>
+                      </div>
+                      <div class="d-flex gap-2">
+                        <button
+                          class="btn btn-sm btn-success flex-grow-1"
+                          (click)="acceptFriendRequest(request.id)"
+                        >
+                          <i class="fas fa-check me-1"></i>Accept
+                        </button>
+                        <button
+                          class="btn btn-sm btn-outline-danger"
+                          (click)="rejectFriendRequest(request.id)"
+                          title="Reject request"
+                        >
+                          <i class="fas fa-times"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        <hr class="my-4" />
+
+        <!-- Sent Friend Requests -->
+        <div class="requests-section">
+          <h4 class="mb-3">
+            <i class="fas fa-paper-plane me-2"></i>Sent Requests
+            @if (sentRequests.length > 0) {
+              <span class="badge bg-secondary ms-2">{{ sentRequests.length }}</span>
+            }
+          </h4>
+          @if (sentRequests.length === 0) {
+            <p class="text-muted">No pending sent requests</p>
+          } @else {
+            <div class="row g-3">
+              @for (request of sentRequests; track request.id) {
+                <div class="col-md-6 col-lg-4">
+                  <div class="friend-card card">
+                    <div class="card-body">
+                      <div class="d-flex align-items-center mb-3">
+                        @if (request.toUser.raceImage) {
+                          <img
+                            [src]="request.toUser.raceImage"
+                            [alt]="request.toUser.race"
+                            [title]="request.toUser.nickname"
+                            class="friend-avatar rounded-circle me-3"
+                          />
+                        } @else {
+                          <div class="friend-avatar-placeholder rounded-circle me-3">
+                            <i class="fas fa-user"></i>
+                          </div>
+                        }
+                        <div class="flex-grow-1">
+                          <h5 class="mb-1">{{ request.toUser.nickname }}</h5>
+                          @if (request.toUser.firstName) {
+                            <p class="text-muted small mb-1">{{ request.toUser.firstName }}</p>
+                          }
+                          @if (request.toUser.currentCity) {
+                            <p class="text-muted small mb-0">
+                              <i class="fas fa-map-marker-alt me-1"></i
+                              >{{ request.toUser.currentCity }}
+                            </p>
+                          }
+                        </div>
+                      </div>
+                      <button
+                        class="btn btn-sm btn-outline-secondary w-100"
+                        (click)="cancelFriendRequest(request.id)"
+                      >
+                        <i class="fas fa-times me-1"></i>Cancel Request
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</div>

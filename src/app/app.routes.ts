@@ -11,6 +11,7 @@ import { RaceResultComponent } from './race-result/race-result.component';
 import { BarMap } from './map/bar-map/bar-map';
 import { UserProfileComponent } from './user-profile/user-profile.component';
 import { CheckSplitComponent } from './check-split/check-split.component';
+import { FriendsComponent } from './friends/friends.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -25,5 +26,6 @@ export const routes: Routes = [
   { path: 'bar-map', component: BarMap },
   { path: 'profile', component: UserProfileComponent },
   { path: 'check-split', component: CheckSplitComponent },
+  { path: 'friends', component: FriendsComponent },
   { path: '**', redirectTo: '' },
 ];

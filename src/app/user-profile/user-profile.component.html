@@ -55,29 +55,18 @@
                 </div>
               </div>
 
-              <!-- Main City -->
-              <div class="col-md-6">
-                <div class="detail-item">
-                  <i class="fas fa-home text-warning"></i>
-                  <div class="detail-content">
-                    <span class="detail-label">Main City</span>
-                    <span class="detail-value">{{ user.mainCity }}</span>
-                  </div>
-                </div>
-              </div>
-
               <!-- Current City -->
               <div class="col-md-6">
                 <div class="detail-item">
                   <i class="fas fa-map-marker-alt text-warning"></i>
                   <div class="detail-content">
-                    <span class="detail-label">Current City</span>
-                    <span class="detail-value">{{ user.currentCity }}</span>
+                    <span class="detail-label">Your City</span>
+                    <span class="detail-value">{{ user.mainCity.name }}</span>
                   </div>
                   <button
                     class="btn btn-sm btn-outline-warning ms-2"
                     (click)="changeLocation()"
-                    title="Change current location"
+                    title="Change location"
                   >
                     <i class="fas fa-map"></i>
                   </button>

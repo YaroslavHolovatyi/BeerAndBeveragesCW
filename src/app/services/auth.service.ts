@@ -1,29 +1,38 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Injectable, inject } from '@angular/core';
+import { Observable } from 'rxjs';
+import { Store } from '@ngrx/store';
 import { User } from '../user-profile/user-profile.component';
+import { RegisterRequest } from '../shared/cities';
+import * as AuthActions from '../store/auth.actions';
+import { selectCurrentUser, selectIsAuthenticated } from '../store/auth.selectors';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private currentUserSubject: BehaviorSubject<User | null>;
-  public currentUser$: Observable<User | null>;
+  private store = inject(Store);
+  public currentUser$ = this.store.select(selectCurrentUser);
+  private isAuthenticated$ = this.store.select(selectIsAuthenticated);
 
   constructor() {
     // Try to load user from localStorage on service initialization
     const storedUser = localStorage.getItem('currentUser');
-    const user = storedUser ? JSON.parse(storedUser) : null;
-
-    this.currentUserSubject = new BehaviorSubject<User | null>(user);
-    this.currentUser$ = this.currentUserSubject.asObservable();
+    if (storedUser) {
+      const user = JSON.parse(storedUser);
+      this.store.dispatch(AuthActions.login({ user }));
+    }
   }
 
   public get currentUserValue(): User | null {
-    return this.currentUserSubject.value;
+    let user: User | null = null;
+    this.currentUser$.subscribe((u) => (user = u)).unsubscribe();
+    return user;
   }
 
   public get isAuthenticated(): boolean {
-    return this.currentUserSubject.value !== null;
+    let isAuth = false;
+    this.isAuthenticated$.subscribe((auth) => (isAuth = auth)).unsubscribe();
+    return isAuth;
   }
 
   login(email: string, password: string): Observable<User> {
@@ -37,8 +46,11 @@ export class AuthService {
           firstName: 'John',
           lastName: 'Doe',
           nickname: 'DragonSlayer',
-          mainCity: 'Kyiv',
-          currentCity: 'Kyiv',
+          mainCity: {
+            id: 1,
+            name: 'Kyiv',
+            slug: 'kyiv',
+          },
           race: 'Dragonborn',
           raceImage: 'races_images/dragonborn_m.jpg',
         };
@@ -50,21 +62,21 @@ export class AuthService {
     });
   }
 
-  signup(userData: Partial<User>): Observable<User> {
-    // TODO: Implement actual API call
+  signup(registerRequest: RegisterRequest): Observable<User> {
+    // TODO: Implement actual API call to POST /api/auth/register
     // For now, simulate signup with mock data
     return new Observable((observer) => {
       setTimeout(() => {
         const user: User = {
           id: Date.now(),
-          email: userData.email!,
-          firstName: userData.firstName!,
-          lastName: userData.lastName,
-          nickname: userData.nickname,
-          mainCity: userData.mainCity!,
-          currentCity: userData.mainCity!,
-          race: userData.race,
-          raceImage: userData.raceImage,
+          email: registerRequest.email,
+          firstName: registerRequest.firstName,
+          lastName: registerRequest.lastName,
+          mainCity: {
+            id: registerRequest.mainCityId,
+            name: 'Selected City', // This will come from backend response
+            slug: 'selected-city',
+          },
         };
 
         this.setCurrentUser(user);
@@ -76,23 +88,15 @@ export class AuthService {
 
   logout(): void {
     localStorage.removeItem('currentUser');
-    this.currentUserSubject.next(null);
+    this.store.dispatch(AuthActions.logout());
   }
 
   updateUser(user: User): void {
     this.setCurrentUser(user);
   }
 
-  updateCurrentCity(cityName: string): void {
-    const user = this.currentUserValue;
-    if (user) {
-      user.currentCity = cityName;
-      this.setCurrentUser(user);
-    }
-  }
-
   private setCurrentUser(user: User): void {
     localStorage.setItem('currentUser', JSON.stringify(user));
-    this.currentUserSubject.next(user);
+    this.store.dispatch(AuthActions.login({ user }));
   }
 }

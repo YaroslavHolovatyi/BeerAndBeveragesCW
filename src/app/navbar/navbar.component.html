@@ -25,6 +25,16 @@
         <img src="icons/like_icon.png" alt="Like" class="like-icon-navbar" />
       </button>
 
+      @if (isAuthenticated) {
+      <button
+        class="btn btn-link p-0 border-0 friends-btn-navbar"
+        (click)="onFriendsClick()"
+        aria-label="Friends"
+      >
+        <img src="icons/friends_icon.png" alt="Friends" class="friends-icon-navbar" />
+      </button>
+      }
+
       <button
         class="btn btn-link text-white fs-4 p-0 border-0"
         (click)="onUserProfileClick()"

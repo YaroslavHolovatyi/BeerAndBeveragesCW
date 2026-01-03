@@ -1,6 +1,7 @@
-import { Component, Output, EventEmitter, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Output, EventEmitter, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { City, cities } from '../../shared/cities';
+import { City } from '../../shared/cities';
+import { CityService } from '../../services/city.service';
 
 @Component({
   selector: 'app-bar-map',
@@ -8,14 +9,20 @@ import { City, cities } from '../../shared/cities';
   templateUrl: './bar-map.html',
   styleUrl: './bar-map.css',
 })
-export class BarMap implements OnChanges {
-  cities: City[] = cities;
+export class BarMap implements OnInit, OnChanges {
+  cities: City[] = [];
   selectedCity: City | null = null;
   @Input() initialCity: City | null = null;
   @Output() citySelected = new EventEmitter<City>();
 
-  constructor() {
-    this.getIconForCity();
+  constructor(private cityService: CityService) {}
+
+  ngOnInit() {
+    // Load cities from backend
+    this.cityService.getCities().subscribe((cities) => {
+      this.cities = cities;
+      this.getIconForCity();
+    });
   }
 
   ngOnChanges(changes: SimpleChanges) {

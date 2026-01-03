@@ -1,9 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
-import { City, cities } from '../shared/cities';
+import { City } from '../shared/cities';
 import { CitySelectorModalComponent } from '../map/city-selector-modal/city-selector-modal.component';
 import { AuthService } from '../services/auth.service';
+import { CityService } from '../services/city.service';
 import { Subject, takeUntil } from 'rxjs';
 
 export interface User {
@@ -12,8 +13,11 @@ export interface User {
   firstName: string;
   lastName?: string;
   nickname?: string;
-  mainCity: string;
-  currentCity: string;
+  mainCity: {
+    id: number;
+    name: string;
+    slug: string;
+  };
   race?: string;
   profileImage?: string;
   raceImage?: string;
@@ -77,14 +81,21 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   selectedCityObj: City | null = null;
   private destroy$ = new Subject<void>();
 
-  constructor(private router: Router, private authService: AuthService) {}
+  constructor(
+    private router: Router,
+    private authService: AuthService,
+    private cityService: CityService
+  ) {}
 
   ngOnInit() {
     // Subscribe to current user
     this.authService.currentUser$.pipe(takeUntil(this.destroy$)).subscribe((user) => {
       if (user) {
         this.user = user;
-        this.selectedCityObj = cities.find((c) => c.name === user.currentCity) || null;
+        // Load cities and find the user's city
+        this.cityService.getCities().subscribe((cities) => {
+          this.selectedCityObj = cities.find((c) => c.name === user.mainCity.name) || null;
+        });
       } else {
         // If no user is logged in, redirect to login
         this.router.navigate(['/login']);
@@ -135,15 +146,20 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   }
 
   onCityConfirmed(city: City) {
-    if (!this.user) return;
+    if (!this.user || !city.id) return;
 
     this.selectedCityObj = city;
-    this.user.currentCity = city.name;
+    // Update mainCity with new city object
+    this.user.mainCity = {
+      id: city.id,
+      name: city.name,
+      slug: city.slug,
+    };
     this.showCityModal = false;
 
     // Update via AuthService to persist the change
-    this.authService.updateCurrentCity(city.name);
-    console.log('Current city changed to:', city.name);
+    this.authService.updateUser(this.user);
+    console.log('Main city changed to:', city.name);
   }
 
   onModalClosed() {

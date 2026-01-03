@@ -1,49 +1,63 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { CitySelectorModalComponent } from '../map/city-selector-modal/city-selector-modal.component';
-import { City } from '../shared/cities';
+import { City, RegisterRequest } from '../shared/cities';
 import { AuthService } from '../services/auth.service';
+import { CityService } from '../services/city.service';
 
 @Component({
   selector: 'app-signup',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, CitySelectorModalComponent],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './signup.component.html',
   styleUrl: './signup.component.css',
 })
-export class SignupComponent {
+export class SignupComponent implements OnInit {
   email = '';
   password = '';
   confirmPassword = '';
   firstName = '';
   lastName = '';
-  mainCity = '';
-  selectedCityObj: City | null = null;
+  selectedCityId: number | null = null;
+  cities: City[] = [];
   errorMessage = '';
-  showCityModal = false;
   isLoading = false;
+  isLoadingCities = true;
 
-  constructor(private router: Router, private authService: AuthService) {}
+  constructor(
+    private router: Router,
+    private authService: AuthService,
+    private cityService: CityService
+  ) {}
 
-  openCityModal() {
-    this.showCityModal = true;
+  ngOnInit() {
+    // Load cities from backend on component initialization
+    this.loadCities();
   }
 
-  onCityConfirmed(city: City) {
-    this.selectedCityObj = city;
-    this.mainCity = city.name;
-    this.showCityModal = false;
-  }
-
-  onModalClosed() {
-    this.showCityModal = false;
+  loadCities() {
+    this.isLoadingCities = true;
+    this.cityService.getCities().subscribe({
+      next: (cities) => {
+        this.cities = cities;
+        this.isLoadingCities = false;
+        // Preselect first city if available
+        if (cities.length > 0 && cities[0].id) {
+          this.selectedCityId = cities[0].id;
+        }
+      },
+      error: (error) => {
+        console.error('Failed to load cities:', error);
+        this.errorMessage = 'Failed to load cities. Please refresh the page.';
+        this.isLoadingCities = false;
+      },
+    });
   }
 
   onSignup() {
     // Validation
-    if (!this.email || !this.password || !this.firstName || !this.lastName || !this.mainCity) {
+    if (!this.email || !this.password || !this.firstName || !this.lastName || !this.selectedCityId) {
       this.errorMessage = 'Please fill in all fields';
       return;
     }
@@ -61,14 +75,16 @@ export class SignupComponent {
     this.isLoading = true;
     this.errorMessage = '';
 
-    const userData = {
+    // Create registration request matching backend contract
+    const registerRequest: RegisterRequest = {
       email: this.email,
       firstName: this.firstName,
       lastName: this.lastName,
-      mainCity: this.mainCity,
+      password: this.password,
+      mainCityId: this.selectedCityId,
     };
 
-    this.authService.signup(userData).subscribe({
+    this.authService.signup(registerRequest).subscribe({
       next: (user) => {
         console.log('Signup successful:', user.email);
         this.isLoading = false;
@@ -77,7 +93,7 @@ export class SignupComponent {
       },
       error: (error) => {
         console.error('Signup failed:', error);
-        this.errorMessage = 'Signup failed. Please try again.';
+        this.errorMessage = error.error?.message || 'Signup failed. Please try again.';
         this.isLoading = false;
       },
     });

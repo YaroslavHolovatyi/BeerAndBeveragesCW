@@ -28,3 +28,23 @@
 .like-btn-navbar:hover .like-icon-navbar {
   filter: grayscale(0%);
 }
+
+/* Friends button styling */
+.friends-btn-navbar {
+  transition: transform 0.2s ease;
+}
+
+.friends-btn-navbar:hover {
+  transform: scale(1.1);
+}
+
+.friends-icon-navbar {
+  width: 32px;
+  height: 32px;
+  filter: grayscale(100%);
+  transition: filter 0.2s ease;
+}
+
+.friends-btn-navbar:hover .friends-icon-navbar {
+  filter: grayscale(0%);
+}

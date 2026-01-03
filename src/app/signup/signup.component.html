@@ -59,26 +59,31 @@
               />
             </div>
 
-            <!-- Main City Field with Map Button -->
+            <!-- Main City Field - Dropdown -->
             <div class="mb-4">
               <label for="mainCity" class="form-label">
                 <i class="fas fa-map-marker-alt me-2"></i>Main City
               </label>
-              <div class="d-flex gap-2">
-                <input
-                  type="text"
-                  class="form-control bg-secondary text-white border-secondary"
+              @if (isLoadingCities) {
+                <div class="d-flex align-items-center">
+                  <div class="spinner-border spinner-border-sm text-warning me-2" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                  <span class="text-muted">Loading cities...</span>
+                </div>
+              } @else {
+                <select
+                  class="form-select bg-secondary text-white border-secondary"
                   id="mainCity"
-                  [(ngModel)]="mainCity"
+                  [(ngModel)]="selectedCityId"
                   name="mainCity"
-                  placeholder="Select your city from map..."
-                  readonly
                   required
-                />
-                <button type="button" class="btn btn-warning map-button" (click)="openCityModal()">
-                  <i class="fas fa-map me-2"></i>Select on Map
-                </button>
-              </div>
+                >
+                  @for (city of cities; track city.id) {
+                    <option [value]="city.id">{{ city.name }}</option>
+                  }
+                </select>
+              }
             </div>
 
             <!-- Password Fields Row -->
@@ -115,13 +120,20 @@
             </div>
 
             <!-- Error Message -->
-            <div *ngIf="errorMessage" class="alert alert-danger mb-4" role="alert">
-              <i class="fas fa-exclamation-triangle me-2"></i>{{ errorMessage }}
-            </div>
+            @if (errorMessage) {
+              <div class="alert alert-danger mb-4" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i>{{ errorMessage }}
+              </div>
+            }
 
             <!-- Signup Button -->
-            <button type="submit" class="btn btn-success w-100 btn-lg mb-3">
-              <i class="fas fa-user-plus me-2"></i>Create Account
+            <button type="submit" class="btn btn-success w-100 btn-lg mb-3" [disabled]="isLoading">
+              @if (isLoading) {
+                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                Creating Account...
+              } @else {
+                <i class="fas fa-user-plus me-2"></i>Create Account
+              }
             </button>
 
             <!-- Login Link -->
@@ -139,13 +151,3 @@
     </div>
   </div>
 </div>
-
-<!-- City Selector Modal -->
-<app-city-selector-modal
-  [isOpen]="showCityModal"
-  [title]="'Select Your Starting City'"
-  [initialCity]="selectedCityObj"
-  (cityConfirmed)="onCityConfirmed($event)"
-  (modalClosed)="onModalClosed()"
->
-</app-city-selector-modal>
