@@ -24,7 +24,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     // Subscribe to authentication state from NgRx store
-    this.store.select(selectIsAuthenticated)
+    this.store
+      .select(selectIsAuthenticated)
       .pipe(takeUntil(this.destroy$))
       .subscribe((isAuth) => {
         this.isAuthenticated = isAuth;

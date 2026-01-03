@@ -57,7 +57,13 @@ export class SignupComponent implements OnInit {
 
   onSignup() {
     // Validation
-    if (!this.email || !this.password || !this.firstName || !this.lastName || !this.selectedCityId) {
+    if (
+      !this.email ||
+      !this.password ||
+      !this.firstName ||
+      !this.lastName ||
+      !this.selectedCityId
+    ) {
       this.errorMessage = 'Please fill in all fields';
       return;
     }

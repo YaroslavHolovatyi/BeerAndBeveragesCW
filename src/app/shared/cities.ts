@@ -1,5 +1,5 @@
 export interface City {
-  id?: number;  // Added to match backend response
+  id?: number; // Added to match backend response
   slug: string;
   name: string;
   x: number;

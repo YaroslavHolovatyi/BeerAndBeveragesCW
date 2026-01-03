@@ -6,10 +6,10 @@ import { City } from '../shared/cities';
 
 /**
  * CityService
- * 
+ *
  * Fetches cities from the backend API.
  * Endpoint: GET /api/cities
- * 
+ *
  * Response structure matches backend:
  * {
  *   id: number,

@@ -32,19 +32,19 @@ interface FriendRequest {
 })
 export class FriendsComponent implements OnInit {
   activeTab: 'friends' | 'requests' = 'friends';
-  
+
   // Friends list
   friends: Friend[] = [];
-  
+
   // Friend requests
   receivedRequests: FriendRequest[] = [];
   sentRequests: FriendRequest[] = [];
-  
+
   // Search for users
   searchQuery: string = '';
   searchResults: Friend[] = [];
   isSearching: boolean = false;
-  
+
   currentUserId: number = 1; // Will be set from auth service
 
   constructor(private authService: AuthService) {}
@@ -55,7 +55,7 @@ export class FriendsComponent implements OnInit {
     if (user) {
       this.currentUserId = user.id;
     }
-    
+
     // Load initial data
     this.loadFriends();
     this.loadFriendRequests();
@@ -76,7 +76,7 @@ export class FriendsComponent implements OnInit {
         lastName: 'Smith',
         race: 'Elf',
         raceImage: 'races_images/elf_f.jpg',
-        currentCity: 'Lviv'
+        currentCity: 'Lviv',
       },
       {
         id: 3,
@@ -85,8 +85,8 @@ export class FriendsComponent implements OnInit {
         lastName: 'Johnson',
         race: 'Dwarf',
         raceImage: 'races_images/dwarf_m.jpg',
-        currentCity: 'Kyiv'
-      }
+        currentCity: 'Kyiv',
+      },
     ];
   }
 
@@ -104,14 +104,14 @@ export class FriendsComponent implements OnInit {
           firstName: 'Charlie',
           race: 'Orc',
           raceImage: 'races_images/orc_m.jpg',
-          currentCity: 'Odesa'
+          currentCity: 'Odesa',
         },
         toUser: { id: this.currentUserId, nickname: 'You' },
         status: 'pending',
-        createdAt: new Date()
-      }
+        createdAt: new Date(),
+      },
     ];
-    
+
     // Mock data for sent requests
     this.sentRequests = [
       {
@@ -125,11 +125,11 @@ export class FriendsComponent implements OnInit {
           firstName: 'Diana',
           race: 'Human',
           raceImage: 'races_images/human_f.jpg',
-          currentCity: 'Kharkiv'
+          currentCity: 'Kharkiv',
         },
         status: 'pending',
-        createdAt: new Date()
-      }
+        createdAt: new Date(),
+      },
     ];
   }
 
@@ -138,9 +138,9 @@ export class FriendsComponent implements OnInit {
       this.searchResults = [];
       return;
     }
-    
+
     this.isSearching = true;
-    
+
     // TODO: Replace with actual API call
     // Mock search results
     setTimeout(() => {
@@ -151,7 +151,7 @@ export class FriendsComponent implements OnInit {
           firstName: 'Eve',
           race: 'Troll',
           raceImage: 'races_images/troll_f.jpg',
-          currentCity: 'Dnipro'
+          currentCity: 'Dnipro',
         },
         {
           id: 7,
@@ -159,11 +159,12 @@ export class FriendsComponent implements OnInit {
           firstName: 'Frank',
           race: 'Gnome',
           raceImage: 'races_images/gnome_m.jpg',
-          currentCity: 'Lviv'
-        }
-      ].filter(user => 
-        user.nickname.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        user.firstName?.toLowerCase().includes(this.searchQuery.toLowerCase())
+          currentCity: 'Lviv',
+        },
+      ].filter(
+        (user) =>
+          user.nickname.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+          user.firstName?.toLowerCase().includes(this.searchQuery.toLowerCase())
       );
       this.isSearching = false;
     }, 300);
@@ -178,38 +179,38 @@ export class FriendsComponent implements OnInit {
   acceptFriendRequest(requestId: number) {
     // TODO: Implement actual API call
     console.log('Accepting friend request:', requestId);
-    const request = this.receivedRequests.find(r => r.id === requestId);
+    const request = this.receivedRequests.find((r) => r.id === requestId);
     if (request) {
       this.friends.push(request.fromUser);
-      this.receivedRequests = this.receivedRequests.filter(r => r.id !== requestId);
+      this.receivedRequests = this.receivedRequests.filter((r) => r.id !== requestId);
     }
   }
 
   rejectFriendRequest(requestId: number) {
     // TODO: Implement actual API call
     console.log('Rejecting friend request:', requestId);
-    this.receivedRequests = this.receivedRequests.filter(r => r.id !== requestId);
+    this.receivedRequests = this.receivedRequests.filter((r) => r.id !== requestId);
   }
 
   cancelFriendRequest(requestId: number) {
     // TODO: Implement actual API call
     console.log('Canceling friend request:', requestId);
-    this.sentRequests = this.sentRequests.filter(r => r.id !== requestId);
+    this.sentRequests = this.sentRequests.filter((r) => r.id !== requestId);
   }
 
   removeFriend(friendId: number) {
     // TODO: Implement actual API call
     if (confirm('Are you sure you want to remove this friend?')) {
       console.log('Removing friend:', friendId);
-      this.friends = this.friends.filter(f => f.id !== friendId);
+      this.friends = this.friends.filter((f) => f.id !== friendId);
     }
   }
 
   isAlreadyFriend(userId: number): boolean {
-    return this.friends.some(f => f.id === userId);
+    return this.friends.some((f) => f.id === userId);
   }
 
   hasPendingRequest(userId: number): boolean {
-    return this.sentRequests.some(r => r.toUserId === userId && r.status === 'pending');
+    return this.sentRequests.some((r) => r.toUserId === userId && r.status === 'pending');
   }
 }
