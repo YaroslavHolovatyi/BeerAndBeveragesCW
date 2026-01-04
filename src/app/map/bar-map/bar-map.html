@@ -1,23 +1,23 @@
 <div class="map-page">
   <div class="map" (click)="onMapClick($event)">
     @for (city of cities; track city.id) {
-      <div
-        class="city-marker"
-        [class.selected]="selectedCity?.slug === city.slug"
-        [style.left.%]="city.x"
-        [style.top.%]="city.y"
-        (click)="onCityClick(city, $event)"
+    <div
+      class="city-marker"
+      [class.selected]="selectedCity?.slug === city.slug"
+      [style.left.%]="city.x"
+      [style.top.%]="city.y"
+      (click)="onCityClick(city, $event)"
+      [title]="city.name"
+    >
+      <img
+        alt="city image"
+        [src]="city.icon"
+        [alt]="city.name + ' icon'"
         [title]="city.name"
-      >
-        <img
-          alt="city image"
-          [src]="city.icon"
-          [alt]="city.name + ' icon'"
-          [title]="city.name"
-          class="city-icon"
-        />
-        <span class="city-name">{{ city.name }}</span>
-      </div>
+        class="city-icon"
+      />
+      <span class="city-name">{{ city.name }}</span>
+    </div>
     }
   </div>
 </div>
