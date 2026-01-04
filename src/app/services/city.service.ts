@@ -6,10 +6,10 @@ import { City } from '../shared/cities';
 
 /**
  * CityService
- *
+ * 
  * Fetches cities from the backend API.
- * Endpoint: GET /api/cities
- *
+ * Endpoint: GET http://localhost:8080/api/cities
+ * 
  * Response structure matches backend:
  * {
  *   id: number,
@@ -23,7 +23,7 @@ import { City } from '../shared/cities';
   providedIn: 'root',
 })
 export class CityService {
-  private apiUrl = '/api/cities';
+  private apiUrl = 'http://localhost:8080/api/cities';
   private cachedCities: City[] | null = null;
 
   constructor(private http: HttpClient) {}

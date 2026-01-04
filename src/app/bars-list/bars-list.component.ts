@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BarCardComponent, Bar } from '../bar-card/bar-card.component';
 import { CitySelectorModalComponent } from '../map/city-selector-modal/city-selector-modal.component';
 import { City } from '../shared/cities';
+import { CityService } from '../services/city.service';
 
 @Component({
   selector: 'app-bars-list',
@@ -12,47 +13,25 @@ import { City } from '../shared/cities';
   templateUrl: './bars-list.component.html',
   styleUrl: './bars-list.component.css',
 })
-export class BarsListComponent {
-  ukrainianCities = [
-    'Kyiv',
-    'Kharkiv',
-    'Odesa',
-    'Dnipro',
-    'Donetsk',
-    'Zaporizhzhia',
-    'Lviv',
-    'Kryvyi Rih',
-    'Mykolaiv',
-    'Mariupol',
-    'Luhansk',
-    'Vinnytsia',
-    'Simferopol',
-    'Sevastopol',
-    'Makiivka',
-    'Kherson',
-    'Poltava',
-    'Chernihiv',
-    'Cherkasy',
-    'Zhytomyr',
-    'Sumy',
-    'Khmelnytskyi',
-    'Chernivtsi',
-    'Rivne',
-    'Kamianske',
-    'Kropyvnytskyi',
-    'Ivano-Frankivsk',
-    'Kremenchuk',
-    'Ternopil',
-    'Lutsk',
-    'Bila Tserkva',
-    'Uzhhorod',
-  ];
+export class BarsListComponent implements OnInit {
+  cities: City[] = [];
+  cityNames: string[] = [];
 
   selectedCity = '';
   selectedCityObj: City | null = null;
   filteredCities: string[] = [];
   showCityDropdown = false;
   showCityModal = false;
+
+  constructor(private cityService: CityService) {}
+
+  ngOnInit() {
+    // Load cities from backend
+    this.cityService.getCities().subscribe((cities) => {
+      this.cities = cities;
+      this.cityNames = cities.map((city) => city.name);
+    });
+  }
 
   drinkTypes = {
     beer: false,
@@ -129,7 +108,7 @@ export class BarsListComponent {
     this.selectedCity = input;
 
     if (input.length > 0) {
-      this.filteredCities = this.ukrainianCities.filter((city) =>
+      this.filteredCities = this.cityNames.filter((city) =>
         city.toLowerCase().includes(input.toLowerCase())
       );
       this.showCityDropdown = this.filteredCities.length > 0;
