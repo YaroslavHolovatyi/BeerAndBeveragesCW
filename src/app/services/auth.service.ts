@@ -95,6 +95,47 @@ export class AuthService {
     this.setCurrentUser(user);
   }
 
+  updateUserProfile(user: User): Observable<User> {
+    // TODO: Implement actual API call to PUT /api/users/:id
+    // For now, just update the user in store and localStorage
+    return new Observable((observer) => {
+      setTimeout(() => {
+        this.setCurrentUser(user);
+        observer.next(user);
+        observer.complete();
+      }, 300);
+    });
+  }
+
+  changePassword(userId: number, oldPassword: string, newPassword: string): Observable<boolean> {
+    // TODO: Implement actual API call to PUT /api/users/:id/password
+    // For now, simulate password change
+    return new Observable((observer) => {
+      setTimeout(() => {
+        // In a real implementation, this would verify oldPassword
+        // and update the password on the server
+        console.log('Password change simulated for user:', userId);
+        observer.next(true);
+        observer.complete();
+      }, 500);
+    });
+  }
+
+  uploadAvatar(userId: number, file: File): Observable<string> {
+    // TODO: Implement actual API call to POST /api/users/:id/avatar
+    // This should use FormData to upload the file
+    return new Observable((observer) => {
+      setTimeout(() => {
+        // In a real implementation, this would upload to server
+        // and return the new avatar URL
+        const mockUrl = `uploads/avatars/${userId}_${Date.now()}.jpg`;
+        console.log('Avatar upload simulated, mock URL:', mockUrl);
+        observer.next(mockUrl);
+        observer.complete();
+      }, 1000);
+    });
+  }
+
   private setCurrentUser(user: User): void {
     localStorage.setItem('currentUser', JSON.stringify(user));
     this.store.dispatch(AuthActions.login({ user }));

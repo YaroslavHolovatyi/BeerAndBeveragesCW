@@ -1,0 +1,317 @@
+<div class="edit-user-page">
+  <div class="container py-4">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <!-- Header -->
+        <div class="page-header mb-4">
+          <h1 class="text-white mb-2"><i class="fas fa-user-edit"></i> Edit Profile</h1>
+          <p class="text-muted">Update your personal information</p>
+        </div>
+
+        <!-- Loading Spinner -->
+        @if (isLoading) {
+        <div class="text-center py-5">
+          <div class="spinner-border text-warning" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="text-white mt-3">Loading your profile...</p>
+        </div>
+        }
+
+        <!-- Main Edit Form -->
+        @if (!isLoading) {
+        <div class="edit-form-card bg-dark border border-secondary rounded p-4 mb-4">
+          <form [formGroup]="editForm" (ngSubmit)="onSubmit()">
+            <!-- Avatar Section -->
+            <div class="form-section mb-4">
+              <h3 class="section-title text-white mb-3">
+                <i class="fas fa-image text-warning"></i> Profile Picture
+              </h3>
+              <div class="avatar-upload-section">
+                <div class="current-avatar">
+                  <img
+                    [src]="previewUrl || getCurrentAvatarUrl()"
+                    alt="Current avatar"
+                    class="avatar-preview"
+                  />
+                </div>
+                <div class="upload-controls">
+                  <input
+                    type="file"
+                    id="avatarUpload"
+                    accept="image/*"
+                    (change)="onFileSelected($event)"
+                    class="d-none"
+                  />
+                  <label for="avatarUpload" class="btn btn-outline-warning">
+                    <i class="fas fa-upload"></i> Choose New Picture
+                  </label>
+                  @if (selectedFile) {
+                  <button
+                    type="button"
+                    class="btn btn-outline-danger ms-2"
+                    (click)="removeSelectedFile()"
+                  >
+                    <i class="fas fa-times"></i> Remove
+                  </button>
+                  }
+                </div>
+              </div>
+            </div>
+
+            <!-- Basic Information -->
+            <div class="form-section mb-4">
+              <h3 class="section-title text-white mb-3">
+                <i class="fas fa-user text-warning"></i> Basic Information
+              </h3>
+
+              <div class="row g-3">
+                <!-- First Name -->
+                <div class="col-md-6">
+                  <label for="firstName" class="form-label text-white">
+                    First Name <span class="text-danger">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    class="form-control bg-secondary text-white border-secondary"
+                    id="firstName"
+                    formControlName="firstName"
+                    placeholder="Enter first name"
+                  />
+                  @if (editForm.get('firstName')?.invalid && editForm.get('firstName')?.touched) {
+                  <small class="text-danger">
+                    @if (editForm.get('firstName')?.errors?.['required']) { First name is required }
+                    @if (editForm.get('firstName')?.errors?.['minlength']) { First name must be at
+                    least 2 characters }
+                  </small>
+                  }
+                </div>
+
+                <!-- Last Name -->
+                <div class="col-md-6">
+                  <label for="lastName" class="form-label text-white">Last Name</label>
+                  <input
+                    type="text"
+                    class="form-control bg-secondary text-white border-secondary"
+                    id="lastName"
+                    formControlName="lastName"
+                    placeholder="Enter last name"
+                  />
+                  @if (editForm.get('lastName')?.invalid && editForm.get('lastName')?.touched) {
+                  <small class="text-danger"> Last name must be at least 2 characters </small>
+                  }
+                </div>
+
+                <!-- Username/Nickname -->
+                <div class="col-md-6">
+                  <label for="username" class="form-label text-white">
+                    Username <span class="text-danger">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    class="form-control bg-secondary text-white border-secondary"
+                    id="username"
+                    formControlName="username"
+                    placeholder="Enter username"
+                  />
+                  @if (editForm.get('username')?.invalid && editForm.get('username')?.touched) {
+                  <small class="text-danger">
+                    @if (editForm.get('username')?.errors?.['required']) { Username is required }
+                    @if (editForm.get('username')?.errors?.['minlength']) { Username must be at
+                    least 3 characters }
+                  </small>
+                  }
+                </div>
+
+                <!-- Email -->
+                <div class="col-md-6">
+                  <label for="email" class="form-label text-white">
+                    Email <span class="text-danger">*</span>
+                  </label>
+                  <input
+                    type="email"
+                    class="form-control bg-secondary text-white border-secondary"
+                    id="email"
+                    formControlName="email"
+                    placeholder="Enter email"
+                  />
+                  @if (editForm.get('email')?.invalid && editForm.get('email')?.touched) {
+                  <small class="text-danger">
+                    @if (editForm.get('email')?.errors?.['required']) { Email is required } @if
+                    (editForm.get('email')?.errors?.['email']) { Please enter a valid email address
+                    }
+                  </small>
+                  }
+                </div>
+
+                <!-- Main City -->
+                <div class="col-12">
+                  <label class="form-label text-white">
+                    Main City <span class="text-danger">*</span>
+                  </label>
+                  <div class="city-selector-field">
+                    <div class="selected-city-display">
+                      <i class="fas fa-map-marker-alt text-warning me-2"></i>
+                      <span class="city-name">{{ getSelectedCityName() }}</span>
+                    </div>
+                    <button
+                      type="button"
+                      class="btn btn-outline-warning"
+                      (click)="openCitySelector()"
+                    >
+                      <i class="fas fa-map"></i> Choose City
+                    </button>
+                  </div>
+                  @if (editForm.get('mainCityId')?.invalid && editForm.get('mainCityId')?.touched) {
+                  <small class="text-danger"> Please select a city </small>
+                  }
+                </div>
+              </div>
+            </div>
+
+            <!-- Password Section -->
+            <div class="form-section mb-4">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 class="section-title text-white mb-0">
+                  <i class="fas fa-lock text-warning"></i> Change Password
+                </h3>
+                <button
+                  type="button"
+                  class="btn btn-sm btn-outline-warning"
+                  (click)="togglePasswordSection()"
+                >
+                  @if (showPasswordSection) {
+                  <i class="fas fa-chevron-up"></i> Hide } @else {
+                  <i class="fas fa-chevron-down"></i> Show }
+                </button>
+              </div>
+
+              @if (showPasswordSection) {
+              <div [formGroup]="passwordForm">
+                <div class="password-info mb-3">
+                  <small class="text-muted">
+                    <i class="fas fa-info-circle"></i>
+                    To change your password, you must enter your current password and choose a new
+                    one.
+                  </small>
+                </div>
+
+                <div class="row g-3">
+                  <!-- Old Password -->
+                  <div class="col-12">
+                    <label for="oldPassword" class="form-label text-white">
+                      Current Password <span class="text-danger">*</span>
+                    </label>
+                    <input
+                      type="password"
+                      class="form-control bg-secondary text-white border-secondary"
+                      id="oldPassword"
+                      formControlName="oldPassword"
+                      placeholder="Enter current password"
+                    />
+                    @if (passwordForm.get('oldPassword')?.invalid &&
+                    passwordForm.get('oldPassword')?.touched) {
+                    <small class="text-danger">Current password is required</small>
+                    }
+                  </div>
+
+                  <!-- New Password -->
+                  <div class="col-md-6">
+                    <label for="newPassword" class="form-label text-white">
+                      New Password <span class="text-danger">*</span>
+                    </label>
+                    <input
+                      type="password"
+                      class="form-control bg-secondary text-white border-secondary"
+                      id="newPassword"
+                      formControlName="newPassword"
+                      placeholder="Enter new password"
+                    />
+                    @if (passwordForm.get('newPassword')?.invalid &&
+                    passwordForm.get('newPassword')?.touched) {
+                    <small class="text-danger">
+                      @if (passwordForm.get('newPassword')?.errors?.['required']) { New password is
+                      required } @if (passwordForm.get('newPassword')?.errors?.['minlength']) {
+                      Password must be at least 6 characters }
+                    </small>
+                    }
+                  </div>
+
+                  <!-- Confirm Password -->
+                  <div class="col-md-6">
+                    <label for="confirmPassword" class="form-label text-white">
+                      Confirm New Password <span class="text-danger">*</span>
+                    </label>
+                    <input
+                      type="password"
+                      class="form-control bg-secondary text-white border-secondary"
+                      id="confirmPassword"
+                      formControlName="confirmPassword"
+                      placeholder="Confirm new password"
+                    />
+                    @if (passwordForm.get('confirmPassword')?.invalid &&
+                    passwordForm.get('confirmPassword')?.touched) {
+                    <small class="text-danger">Please confirm your password</small>
+                    } @if (passwordForm.errors?.['passwordMismatch'] &&
+                    passwordForm.get('confirmPassword')?.touched) {
+                    <small class="text-danger">Passwords do not match</small>
+                    }
+                  </div>
+                </div>
+              </div>
+              }
+            </div>
+
+            <!-- Messages -->
+            @if (errorMessage) {
+            <div class="alert alert-danger" role="alert">
+              <i class="fas fa-exclamation-circle"></i> {{ errorMessage }}
+            </div>
+            } @if (successMessage) {
+            <div class="alert alert-success" role="alert">
+              <i class="fas fa-check-circle"></i> {{ successMessage }}
+            </div>
+            }
+
+            <!-- Action Buttons -->
+            <div class="form-actions d-flex justify-content-between gap-2">
+              <button type="button" class="btn btn-outline-secondary flex-fill" (click)="cancel()">
+                <i class="fas fa-times"></i> Cancel
+              </button>
+              <button
+                type="submit"
+                class="btn btn-warning flex-fill"
+                [disabled]="
+                  editForm.invalid || (showPasswordSection && passwordForm.invalid) || isSubmitting
+                "
+              >
+                @if (isSubmitting) {
+                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                Saving... } @else {
+                <i class="fas fa-save"></i> Save Changes }
+              </button>
+            </div>
+          </form>
+        </div>
+        }
+
+        <!-- Back to Profile Link -->
+        <div class="text-center">
+          <a [routerLink]="['/profile']" class="text-warning">
+            <i class="fas fa-arrow-left"></i> Back to Profile
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- City Selector Modal -->
+@if (showCityModal) {
+<app-city-selector-modal
+  [isOpen]="showCityModal"
+  [initialCity]="selectedCityObj"
+  (cityConfirmed)="onCityConfirmed($event)"
+  (modalClosed)="onModalClosed()"
+/>
+}

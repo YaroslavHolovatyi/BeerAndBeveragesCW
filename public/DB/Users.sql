@@ -17,7 +17,6 @@ CREATE TABLE users (
 
   race_id INT UNSIGNED NULL,
   main_city_id INT UNSIGNED NOT NULL,
-  location_city_id INT UNSIGNED NULL,
 
   role ENUM('user', 'admin', 'moderator') DEFAULT 'user',
 
@@ -40,3 +39,5 @@ CREATE TABLE users (
   FOREIGN KEY (main_city_id) REFERENCES cities(id),
   FOREIGN KEY (location_city_id) REFERENCES cities(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+select * from users;

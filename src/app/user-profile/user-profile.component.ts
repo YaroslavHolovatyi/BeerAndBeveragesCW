@@ -19,6 +19,7 @@ export interface User {
     slug: string;
   };
   race?: string;
+  gender?: string;
   profileImage?: string;
   raceImage?: string;
 }
@@ -137,8 +138,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   }
 
   editProfile() {
-    console.log('Edit profile clicked');
-    // TODO: Navigate to edit profile page or open modal
+    this.router.navigate(['/profile/edit']);
   }
 
   changeLocation() {

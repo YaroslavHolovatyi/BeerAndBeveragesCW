@@ -1,0 +1,220 @@
+.edit-user-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  padding: 2rem 0;
+}
+
+.page-header h1 {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.edit-form-card {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  border-bottom: 2px solid #ffc107;
+  padding-bottom: 0.5rem;
+}
+
+/* Avatar Upload Section */
+.avatar-upload-section {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 0.5rem;
+}
+
+.current-avatar {
+  flex-shrink: 0;
+}
+
+.avatar-preview {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #ffc107;
+  box-shadow: 0 2px 8px rgba(255, 193, 7, 0.3);
+}
+
+.upload-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* City Selector Field */
+.city-selector-field {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 0.5rem;
+  border: 1px solid #6c757d;
+}
+
+.selected-city-display {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  color: #fff;
+}
+
+.city-name {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+/* Form Controls */
+.form-control,
+.form-select {
+  border: 1px solid #6c757d;
+}
+
+.form-control:focus,
+.form-select:focus {
+  background-color: #495057;
+  border-color: #ffc107;
+  color: white;
+  box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
+}
+
+.form-control::placeholder {
+  color: #adb5bd;
+}
+
+/* Password Section */
+.password-info {
+  padding: 0.75rem;
+  background: rgba(255, 193, 7, 0.1);
+  border-left: 3px solid #ffc107;
+  border-radius: 0.25rem;
+}
+
+/* Form Actions */
+.form-actions {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #495057;
+}
+
+.btn {
+  padding: 0.75rem 1.5rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-warning {
+  color: #000;
+}
+
+.btn-warning:hover {
+  background-color: #ffca2c;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(255, 193, 7, 0.3);
+}
+
+.btn-outline-warning:hover {
+  color: #000;
+}
+
+.btn-outline-secondary:hover {
+  transform: translateY(-2px);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Alert Messages */
+.alert {
+  border-radius: 0.5rem;
+  border: none;
+}
+
+.alert-danger {
+  background-color: rgba(220, 53, 69, 0.2);
+  color: #ff6b6b;
+  border-left: 4px solid #dc3545;
+}
+
+.alert-success {
+  background-color: rgba(25, 135, 84, 0.2);
+  color: #51cf66;
+  border-left: 4px solid #198754;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .avatar-upload-section {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .upload-controls {
+    justify-content: center;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .page-header h1 {
+    font-size: 1.5rem;
+  }
+}
+
+/* Text Color Overrides */
+.text-danger {
+  color: #ff6b6b !important;
+}
+
+.text-success {
+  color: #51cf66 !important;
+}
+
+.text-warning {
+  color: #ffc107 !important;
+}
+
+.text-muted {
+  color: #adb5bd !important;
+}
+
+/* Form Section Spacing */
+.form-section {
+  margin-bottom: 2rem;
+}
+
+.form-section:last-child {
+  margin-bottom: 0;
+}
+
+/* Small devices specific styles */
+@media (max-width: 576px) {
+  .edit-user-page {
+    padding: 1rem 0;
+  }
+
+  .edit-form-card {
+    padding: 1.5rem !important;
+  }
+
+  .avatar-preview {
+    width: 100px;
+    height: 100px;
+  }
+
+  .btn {
+    padding: 0.5rem 1rem;
+  }
+}
