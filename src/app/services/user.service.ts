@@ -120,7 +120,8 @@ export class UserService {
       errorMessage = error.error.message;
     } else if (error.status === 0) {
       // Network error or CORS issue
-      errorMessage = 'Cannot connect to server. Please check if the backend is running and CORS is configured.';
+      errorMessage =
+        'Cannot connect to server. Please check if the backend is running and CORS is configured.';
     } else {
       // Backend error - prioritize backend message
       const backendMessage = error.error?.message || error.error?.error;

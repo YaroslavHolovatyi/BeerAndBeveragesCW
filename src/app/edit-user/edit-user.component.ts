@@ -347,12 +347,20 @@ export class EditUserComponent implements OnInit, OnDestroy {
 
     // Normalize race name to lowercase and replace spaces with hyphens
     const raceName = this.user.race.toLowerCase().replace(/\s+/g, '-');
-    
+
     // Map gender values to file suffix (f for female, m for male)
     let genderSuffix = 'm'; // default to male
-    if (this.user.gender.toLowerCase() === 'heroine' || this.user.gender.toLowerCase() === 'female' || this.user.gender.toLowerCase() === 'f') {
+    if (
+      this.user.gender.toLowerCase() === 'heroine' ||
+      this.user.gender.toLowerCase() === 'female' ||
+      this.user.gender.toLowerCase() === 'f'
+    ) {
       genderSuffix = 'f';
-    } else if (this.user.gender.toLowerCase() === 'hero' || this.user.gender.toLowerCase() === 'male' || this.user.gender.toLowerCase() === 'm') {
+    } else if (
+      this.user.gender.toLowerCase() === 'hero' ||
+      this.user.gender.toLowerCase() === 'male' ||
+      this.user.gender.toLowerCase() === 'm'
+    ) {
       genderSuffix = 'm';
     }
 
