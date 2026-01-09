@@ -1,0 +1,99 @@
+<div class="bars-page">
+  <div class="page-header">
+    <h1>Bars</h1>
+  </div>
+
+  <!-- Search & Filters -->
+  <div class="filters-section">
+    <div class="search-box">
+      <input
+        type="text"
+        [(ngModel)]="searchQuery"
+        (keyup.enter)="onSearch()"
+        placeholder="Search by name or address..."
+        class="search-input"
+      />
+      <button (click)="onSearch()" class="search-button">Search</button>
+    </div>
+
+    <div class="filters">
+      <select [(ngModel)]="selectedPriceLevel" (change)="onFilterChange()" class="filter-select">
+        <option [ngValue]="undefined">All Price Levels</option>
+        <option [ngValue]="1">$ - Budget</option>
+        <option [ngValue]="2">$$ - Moderate</option>
+        <option [ngValue]="3">$$$ - Expensive</option>
+        <option [ngValue]="4">$$$$ - Very Expensive</option>
+      </select>
+
+      <select [(ngModel)]="minRating" (change)="onFilterChange()" class="filter-select">
+        <option [ngValue]="undefined">All Ratings</option>
+        <option [ngValue]="4">4+ Stars</option>
+        <option [ngValue]="3">3+ Stars</option>
+        <option [ngValue]="2">2+ Stars</option>
+      </select>
+
+      <select [(ngModel)]="sortBy" (change)="onSortChange()" class="filter-select">
+        <option value="rating">Sort by Rating</option>
+        <option value="name">Sort by Name</option>
+        <option value="priceLevel">Sort by Price</option>
+      </select>
+
+      <select [(ngModel)]="sortDir" (change)="onSortChange()" class="filter-select">
+        <option value="DESC">Descending</option>
+        <option value="ASC">Ascending</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading">
+    <p>Loading bars...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="errorMessage" class="error">
+    <p>{{ errorMessage }}</p>
+  </div>
+
+  <!-- Bars List -->
+  <div *ngIf="!isLoading && !errorMessage" class="bars-list">
+    <div *ngIf="bars.length === 0" class="no-results">
+      <p>No bars found matching your criteria.</p>
+    </div>
+
+    <div *ngFor="let bar of bars" class="bar-card" (click)="viewBar(bar.slug)">
+      <div class="bar-info">
+        <h2 class="bar-name">{{ bar.name }}</h2>
+        <p class="bar-address">{{ bar.address }}</p>
+        <div class="bar-details">
+          <span class="price-level">{{ getPriceLevelSymbol(bar.priceLevel) }}</span>
+          <span class="rating">{{ getRatingStars(bar.rating) }} ({{ bar.rating }})</span>
+        </div>
+      </div>
+      <div class="bar-actions">
+        <button class="view-button">View Details →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div *ngIf="totalPages > 1" class="pagination">
+    <button
+      (click)="goToPage(currentPage - 1)"
+      [disabled]="currentPage === 0"
+      class="pagination-button"
+    >
+      Previous
+    </button>
+    <span class="page-info">
+      Page {{ currentPage + 1 }} of {{ totalPages }} ({{ totalElements }} total)
+    </span>
+    <button
+      (click)="goToPage(currentPage + 1)"
+      [disabled]="currentPage >= totalPages - 1"
+      class="pagination-button"
+    >
+      Next
+    </button>
+  </div>
+</div>

@@ -1,16 +1,34 @@
 import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { tap, map } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 import { User } from '../user-profile/user-profile.component';
 import { RegisterRequest } from '../shared/cities';
 import * as AuthActions from '../store/auth.actions';
 import { selectCurrentUser, selectIsAuthenticated } from '../store/auth.selectors';
+import { environment } from '../../environments/environment';
+
+const TOKEN_KEY = 'auth_token';
+
+interface LoginResponse {
+  token: string;
+  user: User;
+}
+
+interface RegisterResponse {
+  token: string;
+  user: User;
+}
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   private store = inject(Store);
+  private http = inject(HttpClient);
+  private readonly API_URL = `${environment.apiUrl}/auth`;
+
   public currentUser$ = this.store.select(selectCurrentUser);
   private isAuthenticated$ = this.store.select(selectIsAuthenticated);
 
@@ -36,59 +54,37 @@ export class AuthService {
   }
 
   login(email: string, password: string): Observable<User> {
-    // TODO: Implement actual API call
-    // For now, simulate login with mock data
-    return new Observable((observer) => {
-      setTimeout(() => {
-        const user: User = {
-          id: 1,
-          email: email,
-          firstName: 'John',
-          lastName: 'Doe',
-          nickname: 'DragonSlayer',
-          mainCity: {
-            id: 1,
-            name: 'Kyiv',
-            slug: 'kyiv',
-          },
-          race: 'Dragonborn',
-          raceImage: 'races_images/dragonborn_m.jpg',
-        };
-
-        this.setCurrentUser(user);
-        observer.next(user);
-        observer.complete();
-      }, 500);
-    });
+    return this.http.post<LoginResponse>(`${this.API_URL}/login`, { email, password }).pipe(
+      tap((response) => {
+        this.setToken(response.token);
+        this.setCurrentUser(response.user);
+      }),
+      map((response) => response.user)
+    );
   }
 
   signup(registerRequest: RegisterRequest): Observable<User> {
-    // TODO: Implement actual API call to POST /api/auth/register
-    // For now, simulate signup with mock data
-    return new Observable((observer) => {
-      setTimeout(() => {
-        const user: User = {
-          id: Date.now(),
-          email: registerRequest.email,
-          firstName: registerRequest.firstName,
-          lastName: registerRequest.lastName,
-          mainCity: {
-            id: registerRequest.mainCityId,
-            name: 'Selected City', // This will come from backend response
-            slug: 'selected-city',
-          },
-        };
-
-        this.setCurrentUser(user);
-        observer.next(user);
-        observer.complete();
-      }, 500);
-    });
+    return this.http.post<RegisterResponse>(`${this.API_URL}/register`, registerRequest).pipe(
+      tap((response) => {
+        this.setToken(response.token);
+        this.setCurrentUser(response.user);
+      }),
+      map((response) => response.user)
+    );
   }
 
   logout(): void {
     localStorage.removeItem('currentUser');
+    localStorage.removeItem(TOKEN_KEY);
     this.store.dispatch(AuthActions.logout());
+  }
+
+  getToken(): string | null {
+    return localStorage.getItem(TOKEN_KEY);
+  }
+
+  setToken(token: string): void {
+    localStorage.setItem(TOKEN_KEY, token);
   }
 
   updateUser(user: User): void {

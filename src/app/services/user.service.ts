@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { AuthService } from './auth.service';
+import { environment } from '../../environments/environment';
 
 // DTOs matching backend
 export interface UserResponse {
@@ -39,16 +40,33 @@ export interface ChangePasswordRequest {
   providedIn: 'root',
 })
 export class UserService {
-  private readonly API_URL = 'http://localhost:8080/api/users';
+  private readonly API_URL = `${environment.apiUrl}/users`;
 
   constructor(private http: HttpClient, private authService: AuthService) {}
+
+  /**
+   * Get HTTP headers with Authorization token
+   */
+  private getAuthHeaders(): HttpHeaders {
+    const token = this.authService.getToken();
+    if (token) {
+      return new HttpHeaders({
+        Authorization: `Bearer ${token}`,
+      });
+    }
+    return new HttpHeaders();
+  }
 
   /**
    * Get current authenticated user
    * GET /api/users/me
    */
   getCurrentUser(): Observable<UserResponse> {
-    return this.http.get<UserResponse>(`${this.API_URL}/me`).pipe(catchError(this.handleError));
+    return this.http
+      .get<UserResponse>(`${this.API_URL}/me`, {
+        headers: this.getAuthHeaders(),
+      })
+      .pipe(catchError(this.handleError));
   }
 
   /**
@@ -56,13 +74,17 @@ export class UserService {
    * PUT /api/users/me
    */
   updateProfile(data: UpdateProfileRequest): Observable<UserResponse> {
-    return this.http.put<UserResponse>(`${this.API_URL}/me`, data).pipe(
-      tap((updatedUser) => {
-        // Update user in auth service/store
-        this.authService.updateUser(this.mapToUser(updatedUser));
-      }),
-      catchError(this.handleError)
-    );
+    return this.http
+      .put<UserResponse>(`${this.API_URL}/me`, data, {
+        headers: this.getAuthHeaders(),
+      })
+      .pipe(
+        tap((updatedUser) => {
+          // Update user in auth service/store
+          this.authService.updateUser(this.mapToUser(updatedUser));
+        }),
+        catchError(this.handleError)
+      );
   }
 
   /**
@@ -71,7 +93,9 @@ export class UserService {
    */
   changePassword(data: ChangePasswordRequest): Observable<void> {
     return this.http
-      .put<void>(`${this.API_URL}/me/password`, data)
+      .put<void>(`${this.API_URL}/me/password`, data, {
+        headers: this.getAuthHeaders(),
+      })
       .pipe(catchError(this.handleError));
   }
 
@@ -83,13 +107,17 @@ export class UserService {
     const formData = new FormData();
     formData.append('file', file);
 
-    return this.http.post<UserResponse>(`${this.API_URL}/me/avatar`, formData).pipe(
-      tap((updatedUser) => {
-        // Update user in auth service/store
-        this.authService.updateUser(this.mapToUser(updatedUser));
-      }),
-      catchError(this.handleError)
-    );
+    return this.http
+      .post<UserResponse>(`${this.API_URL}/me/avatar`, formData, {
+        headers: this.getAuthHeaders(),
+      })
+      .pipe(
+        tap((updatedUser) => {
+          // Update user in auth service/store
+          this.authService.updateUser(this.mapToUser(updatedUser));
+        }),
+        catchError(this.handleError)
+      );
   }
 
   /**

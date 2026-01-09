@@ -1,0 +1,87 @@
+<div class="bar-page">
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading">
+    <p>Loading bar details...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="errorMessage" class="error">
+    <p>{{ errorMessage }}</p>
+    <button (click)="goBack()" class="back-button">← Back to Bars</button>
+  </div>
+
+  <!-- Not Found State -->
+  <div *ngIf="notFound && !isLoading" class="not-found">
+    <h1>Bar Not Found</h1>
+    <p>The bar you're looking for doesn't exist or has been removed.</p>
+    <button (click)="goBack()" class="back-button">← Back to Bars</button>
+  </div>
+
+  <!-- Bar Details -->
+  <div *ngIf="bar && !isLoading" class="bar-details">
+    <div class="header-section">
+      <button (click)="goBack()" class="back-button">← Back to Bars</button>
+      <h1 class="bar-name">{{ bar.name }}</h1>
+      <div class="bar-status" [class.inactive]="!bar.isActive">
+        {{ bar.isActive ? 'Open' : 'Closed' }}
+      </div>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-card">
+        <h2>Basic Information</h2>
+        <div class="info-row">
+          <span class="label">Address:</span>
+          <span class="value">{{ bar.address }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Phone:</span>
+          <span class="value">
+            <a *ngIf="bar.phone" (click)="callPhone(bar.phone)" class="phone-link">
+              {{ bar.phone }}
+            </a>
+            <span *ngIf="!bar.phone">Not available</span>
+          </span>
+        </div>
+        <div class="info-row">
+          <span class="label">Price Level:</span>
+          <span class="value price-level">{{ getPriceLevelSymbol(bar.priceLevel) }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Rating:</span>
+          <span class="value rating">{{ getRatingStars(bar.rating) }} ({{ bar.rating }})</span>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <h2>Description</h2>
+        <p class="description">{{ bar.description || 'No description available.' }}</p>
+      </div>
+
+      <div class="info-card">
+        <h2>Location</h2>
+        <div class="info-row">
+          <span class="label">Latitude:</span>
+          <span class="value">{{ bar.latitude }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Longitude:</span>
+          <span class="value">{{ bar.longitude }}</span>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <h2>Links</h2>
+        <div class="links-section">
+          <button *ngIf="bar.websiteUrl" (click)="openWebsite(bar.websiteUrl)" class="link-button">
+            🌐 Visit Website
+          </button>
+          <button *ngIf="bar.siteUrl" (click)="openWebsite(bar.siteUrl)" class="link-button">
+            📍 View on Map
+          </button>
+          <p *ngIf="!bar.websiteUrl && !bar.siteUrl" class="no-links">No links available</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

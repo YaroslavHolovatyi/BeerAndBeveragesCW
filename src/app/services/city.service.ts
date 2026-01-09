@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { City } from '../shared/cities';
+import { environment } from '../../environments/environment';
 
 /**
  * CityService
@@ -23,7 +24,7 @@ import { City } from '../shared/cities';
   providedIn: 'root',
 })
 export class CityService {
-  private apiUrl = 'http://localhost:8080/api/cities';
+  private apiUrl = `${environment.apiUrl}/cities`;
   private cachedCities: City[] | null = null;
 
   constructor(private http: HttpClient) {}
