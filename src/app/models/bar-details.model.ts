@@ -5,6 +5,7 @@ export interface BarDetails {
   address: string;
   description: string;
   phone: string;
+  menuUrl: string;
   siteUrl: string;
   websiteUrl: string;
   priceLevel: number;

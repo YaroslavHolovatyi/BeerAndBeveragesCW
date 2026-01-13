@@ -54,6 +54,35 @@ export class AuthService {
   }
 
   login(email: string, password: string): Observable<User> {
+    // Makeshift admin user for frontend testing
+    if (email === 'admin' && password === 'admin') {
+      const adminUser: User = {
+        id: 1,
+        email: 'admin@beerandbeverages.com',
+        firstName: 'Admin',
+        lastName: 'User',
+        nickname: 'admin',
+        mainCity: {
+          id: 1,
+          name: 'Kyiv',
+          slug: 'kyiv',
+        },
+        race: 'Human',
+        gender: 'male',
+        profileImage: 'races_images/human_m.jpg',
+        raceImage: 'races_images/human_m.jpg',
+      };
+
+      return new Observable((observer) => {
+        setTimeout(() => {
+          this.setToken('makeshift-admin-token');
+          this.setCurrentUser(adminUser);
+          observer.next(adminUser);
+          observer.complete();
+        }, 300);
+      });
+    }
+
     return this.http.post<LoginResponse>(`${this.API_URL}/login`, { email, password }).pipe(
       tap((response) => {
         this.setToken(response.token);

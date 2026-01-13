@@ -15,6 +15,7 @@ import { UserProfileComponent } from './user-profile/user-profile.component';
 import { EditUserComponent } from './edit-user/edit-user.component';
 import { CheckSplitComponent } from './check-split/check-split.component';
 import { FriendsComponent } from './friends/friends.component';
+import { SummonPartyComponent } from './summon-party/summon-party.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -33,5 +34,6 @@ export const routes: Routes = [
   { path: 'profile/edit', component: EditUserComponent },
   { path: 'check-split', component: CheckSplitComponent },
   { path: 'friends', component: FriendsComponent },
+  { path: 'summon-party', component: SummonPartyComponent },
   { path: '**', redirectTo: '' },
 ];

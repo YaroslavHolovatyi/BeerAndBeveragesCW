@@ -1,0 +1,160 @@
+<div class="summon-party-page">
+  <div class="container py-4">
+    <!-- Header -->
+    <div class="page-header mb-4">
+      <button class="btn btn-back" (click)="goBack()">
+        <i class="fas fa-arrow-left me-2"></i>Back to Tavern
+      </button>
+      <h1 class="page-title"><i class="fas fa-users-crown me-3"></i>Summon Dungeon Party</h1>
+      <p class="page-subtitle">Gather your fellowship for an epic adventure!</p>
+    </div>
+
+    <!-- Current Party Display -->
+    <div *ngIf="currentParty$ | async as currentParty" class="current-party-section mb-5">
+      <div class="current-party-badge">
+        <i class="fas fa-shield-alt me-2"></i>Current Dungeon Party
+      </div>
+      <div class="current-party-card">
+        <div class="party-header-info">
+          <h2 class="party-name">{{ currentParty.name }}</h2>
+          <div class="party-time"><i class="fas fa-clock me-2"></i>{{ currentParty.time }}</div>
+        </div>
+
+        <div class="party-members">
+          <h4 class="members-title">
+            <i class="fas fa-users me-2"></i>Party Members ({{ currentParty.members.length }})
+          </h4>
+          <div class="members-grid">
+            <div *ngFor="let member of currentParty.members" class="member-card">
+              <img
+                [src]="member.profileImage || 'races_images/human_m.jpg'"
+                [alt]="member.firstName"
+                class="member-avatar"
+              />
+              <div class="member-info">
+                <div class="member-name">{{ member.firstName }} {{ member.lastName }}</div>
+                <div class="member-race">{{ member.race }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn btn-dismiss" (click)="dismissCurrentParty()">
+          <i class="fas fa-times-circle me-2"></i>Dismiss Party
+        </button>
+      </div>
+    </div>
+
+    <!-- Summon Party Form -->
+    <div class="summon-form-section">
+      <div class="form-card">
+        <h3 class="form-title"><i class="fas fa-scroll me-2"></i>Create New Party</h3>
+
+        <!-- Party Name -->
+        <div class="form-group">
+          <label for="partyName" class="form-label">
+            <i class="fas fa-signature me-2"></i>Party Name
+          </label>
+          <input
+            type="text"
+            id="partyName"
+            class="form-control"
+            [(ngModel)]="partyName"
+            placeholder="Enter party name (e.g., The Fellowship of the Beer)"
+            maxlength="50"
+          />
+        </div>
+
+        <!-- Time Selection -->
+        <div class="form-group">
+          <label for="timeSelect" class="form-label">
+            <i class="fas fa-hourglass-half me-2"></i>Gathering Time
+          </label>
+          <select id="timeSelect" class="form-control" [(ngModel)]="selectedTime">
+            <option value="" disabled>Select a time...</option>
+            <option *ngFor="let option of timeOptions" [value]="option.value">
+              {{ option.label }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Custom DateTime (show if custom selected) -->
+        <div *ngIf="selectedTime === 'custom'" class="form-group">
+          <label for="customDateTime" class="form-label">
+            <i class="fas fa-calendar-alt me-2"></i>Custom Date & Time
+          </label>
+          <input
+            type="datetime-local"
+            id="customDateTime"
+            class="form-control"
+            [(ngModel)]="customDateTime"
+          />
+        </div>
+
+        <!-- Friends Selection -->
+        <div class="form-group">
+          <label class="form-label">
+            <i class="fas fa-user-friends me-2"></i>Select Adventurers
+            <span class="badge bg-warning text-dark ms-2"
+              >{{ getSelectedFriends().length }} selected</span
+            >
+          </label>
+          <div class="friends-selection-grid">
+            <div
+              *ngFor="let friend of friends"
+              class="friend-select-card"
+              [class.selected]="friend.selected"
+              (click)="toggleFriendSelection(friend)"
+            >
+              <div class="selection-indicator">
+                <i
+                  class="fas"
+                  [class.fa-check-circle]="friend.selected"
+                  [class.fa-circle]="!friend.selected"
+                ></i>
+              </div>
+
+              <!-- Party Status Chip -->
+              <div
+                *ngIf="
+                  (currentParty$ | async)?.members &&
+                  isInCurrentParty(friend, (currentParty$ | async)!)
+                "
+                class="party-chip"
+              >
+                <i class="fas fa-users me-1"></i>In Party
+              </div>
+
+              <img
+                [src]="friend.profileImage || 'races_images/human_m.jpg'"
+                [alt]="friend.firstName"
+                class="friend-avatar"
+              />
+              <div class="friend-details">
+                <div class="friend-name">{{ friend.firstName }} {{ friend.lastName }}</div>
+                <div class="friend-meta">
+                  <span class="friend-race">
+                    <i class="fas fa-shield-alt me-1"></i>{{ friend.race }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Summon Button -->
+        <div class="summon-button-container">
+          <button class="btn btn-summon" [disabled]="!isFormValid()" (click)="summonParty()">
+            <i class="fas fa-magic me-2"></i>
+            <span class="summon-text">SUMMON PARTY</span>
+            <i class="fas fa-magic ms-2"></i>
+          </button>
+          <div *ngIf="!isFormValid()" class="validation-hint">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            Fill in all fields and select at least one adventurer
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

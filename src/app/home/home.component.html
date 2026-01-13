@@ -5,5 +5,150 @@
     <div class="bars-list">
       <app-bar-card *ngFor="let bar of bars" [bar]="bar"></app-bar-card>
     </div>
+
+    <!-- Party for Dungeon Section (Only visible when logged in) -->
+    <div *ngIf="isLoggedIn" class="party-section mt-5">
+      <div class="party-header mb-4">
+        <h2><i class="fas fa-dungeon me-2"></i>Party for Dungeon</h2>
+        <p>Gather your fellowship for the next adventure!</p>
+      </div>
+
+      <div class="friends-grid">
+        <div
+          *ngFor="let friend of friends"
+          class="friend-card bg-dark text-white border border-secondary rounded p-3"
+        >
+          <div class="friend-content d-flex align-items-center">
+            <div class="friend-avatar me-3">
+              <!-- Party Status Chip -->
+              <div
+                *ngIf="isInCurrentParty(friend.id, (partyMembers$ | async)!)"
+                class="party-status-chip"
+              >
+                <i class="fas fa-users me-1"></i>IN PARTY
+              </div>
+              <!-- Raid Status Chip -->
+              <div *ngIf="isInCurrentRaid(friend.id)" class="raid-status-chip">
+                <i class="fas fa-dragon me-1"></i>IN RAID
+              </div>
+
+              <img
+                [src]="friend.profileImage || 'races_images/human_m.jpg'"
+                [alt]="friend.firstName"
+                class="rounded-circle"
+                width="60"
+                height="60"
+              />
+            </div>
+            <div class="friend-info flex-grow-1">
+              <h5 class="mb-1">{{ friend.firstName }} {{ friend.lastName }}</h5>
+              <p class="mb-0 small">
+                <i class="fas fa-user me-1"></i>{{ friend.nickname }}
+                <span *ngIf="friend.race" class="ms-2">
+                  <i class="fas fa-shield-alt me-1"></i>{{ friend.race }}
+                </span>
+              </p>
+            </div>
+            <div class="friend-action">
+              <button
+                class="btn btn-sm"
+                [class.btn-warning]="!friend.isInvited"
+                [class.btn-success]="friend.isInvited"
+                (click)="sendInvitation(friend)"
+              >
+                <i class="fas fa-crow me-2"></i>
+                <span *ngIf="!friend.isInvited">Send Invitation Crow</span>
+                <span *ngIf="friend.isInvited"> <i class="fas fa-check me-1"></i>Invited </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Continue Creating Party Button -->
+      <div *ngIf="hasInvitedFriends" class="text-center mt-4">
+        <button class="btn btn-continue-party" (click)="navigateToCreateParty()">
+          <i class="fas fa-scroll me-2"></i>
+          Continue Creating Party
+          <i class="fas fa-arrow-right ms-2"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Raids Near You Section -->
+    <div class="raids-section mt-5">
+      <div class="raids-header mb-4">
+        <h2><i class="fas fa-fire me-2"></i>Raids near you!</h2>
+        <p>Join epic pub crawls and themed gatherings in your area!</p>
+      </div>
+
+      <div class="raids-grid">
+        <div
+          *ngFor="let raid of raids"
+          class="raid-card bg-dark text-white border border-warning rounded p-4"
+        >
+          <div class="raid-header mb-3">
+            <h4 class="raid-name text-warning mb-2">
+              <i class="fas fa-helmet-battle me-2"></i>{{ raid.name }}
+            </h4>
+            <p class="raid-creator mb-0 small">
+              <i class="fas fa-crown me-1"></i>Led by {{ raid.creator }}
+            </p>
+          </div>
+
+          <div class="raid-details mb-3">
+            <div class="detail-item mb-2">
+              <i class="fas fa-theater-masks me-2 text-warning"></i>
+              <span class="detail-label">Theme:</span>
+              <span class="detail-value">{{ raid.theme }}</span>
+            </div>
+            <div class="detail-item mb-2">
+              <i class="fas fa-beer me-2 text-warning"></i>
+              <span class="detail-label">Bar:</span>
+              <span class="detail-value">{{ raid.barName }}</span>
+            </div>
+            <div class="detail-item mb-2">
+              <i class="fas fa-users me-2 text-warning"></i>
+              <span class="detail-label">Attendees:</span>
+              <span class="detail-value"
+                >{{ raid.currentAttendees }} / {{ raid.maxAttendees }}</span
+              >
+            </div>
+            <div class="detail-item">
+              <i class="fas fa-calendar-alt me-2 text-warning"></i>
+              <span class="detail-label">Date:</span>
+              <span class="detail-value">{{ raid.date | date : 'short' }}</span>
+            </div>
+          </div>
+
+          <div class="raid-progress mb-3">
+            <div class="progress" style="height: 8px">
+              <div
+                class="progress-bar bg-warning"
+                role="progressbar"
+                [style.width.%]="(raid.currentAttendees / raid.maxAttendees) * 100"
+                [attr.aria-valuenow]="raid.currentAttendees"
+                [attr.aria-valuemin]="0"
+                [attr.aria-valuemax]="raid.maxAttendees"
+              ></div>
+            </div>
+          </div>
+
+          <button
+            class="btn w-100"
+            [class.btn-danger]="!raid.isJoined"
+            [class.btn-success]="raid.isJoined"
+            [disabled]="!raid.isJoined && raid.currentAttendees >= raid.maxAttendees"
+            (click)="joinRaid(raid)"
+          >
+            <i class="fas fa-flag me-2"></i>
+            <span *ngIf="!raid.isJoined">And Gondor will answer!</span>
+            <span *ngIf="raid.isJoined">
+              <i class="fas fa-check me-1"></i>You're in the raid!
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

@@ -76,10 +76,15 @@
           <button *ngIf="bar.websiteUrl" (click)="openWebsite(bar.websiteUrl)" class="link-button">
             🌐 Visit Website
           </button>
+          <button *ngIf="bar.menuUrl" (click)="openWebsite(bar.menuUrl)" class="link-button">
+            📋 View Menu
+          </button>
           <button *ngIf="bar.siteUrl" (click)="openWebsite(bar.siteUrl)" class="link-button">
             📍 View on Map
           </button>
-          <p *ngIf="!bar.websiteUrl && !bar.siteUrl" class="no-links">No links available</p>
+          <p *ngIf="!bar.websiteUrl && !bar.menuUrl && !bar.siteUrl" class="no-links">
+            No links available
+          </p>
         </div>
       </div>
     </div>
