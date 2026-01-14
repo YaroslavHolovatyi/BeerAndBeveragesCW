@@ -89,53 +89,117 @@ export class CheckSplitComponent implements OnInit {
       setTimeout(() => {
         if (!this.receipt) return;
 
-        // Mock parsed receipt data
+        // Real receipt data from Babo Gardens
         this.receipt.items = [
           {
             id: '1',
-            name: 'Lvivske Beer (0.5L)',
-            quantity: 3,
-            unitPrice: 45,
-            totalPrice: 135,
-            assignedTo: [],
+            name: 'Піцца з курки, гриби',
+            quantity: 1,
+            unitPrice: 160.0,
+            totalPrice: 160.0,
+            assignedTo: {},
           },
           {
             id: '2',
-            name: 'Caesar Salad',
-            quantity: 2,
-            unitPrice: 120,
-            totalPrice: 240,
-            assignedTo: [],
+            name: 'Цибуля та печінки',
+            quantity: 1,
+            unitPrice: 120.0,
+            totalPrice: 120.0,
+            assignedTo: {},
           },
           {
             id: '3',
-            name: 'Grilled Chicken',
+            name: 'Цибуля та гриби',
             quantity: 1,
-            unitPrice: 180,
-            totalPrice: 180,
-            assignedTo: [],
+            unitPrice: 80.0,
+            totalPrice: 80.0,
+            assignedTo: {},
           },
           {
             id: '4',
-            name: 'French Fries',
-            quantity: 2,
-            unitPrice: 60,
-            totalPrice: 120,
-            assignedTo: [],
+            name: 'Меселдо з бараниною',
+            quantity: 1,
+            unitPrice: 220.0,
+            totalPrice: 220.0,
+            assignedTo: {},
           },
           {
             id: '5',
-            name: 'Espresso',
-            quantity: 2,
-            unitPrice: 35,
-            totalPrice: 70,
-            assignedTo: [],
+            name: 'Салат зі слив',
+            quantity: 1,
+            unitPrice: 160.0,
+            totalPrice: 160.0,
+            assignedTo: {},
+          },
+          {
+            id: '6',
+            name: 'Торт КИЇВ',
+            quantity: 1,
+            unitPrice: 870.0,
+            totalPrice: 870.0,
+            assignedTo: {},
+          },
+          {
+            id: '7',
+            name: 'Коктейль Raspberry Fizz',
+            quantity: 1,
+            unitPrice: 250.0,
+            totalPrice: 250.0,
+            assignedTo: {},
+          },
+          {
+            id: '8',
+            name: 'Коктейль Aperol Spritz',
+            quantity: 1,
+            unitPrice: 180.0,
+            totalPrice: 180.0,
+            assignedTo: {},
+          },
+          {
+            id: '9',
+            name: 'Коктейль Clover to Apple',
+            quantity: 1,
+            unitPrice: 150.0,
+            totalPrice: 150.0,
+            assignedTo: {},
+          },
+          {
+            id: '10',
+            name: 'Коктейль Clover Garden',
+            quantity: 1,
+            unitPrice: 250.0,
+            totalPrice: 250.0,
+            assignedTo: {},
+          },
+          {
+            id: '11',
+            name: 'Коктейль French 75',
+            quantity: 1,
+            unitPrice: 180.0,
+            totalPrice: 180.0,
+            assignedTo: {},
+          },
+          {
+            id: '12',
+            name: 'Коктейль Aperol Spritz',
+            quantity: 1,
+            unitPrice: 260.0,
+            totalPrice: 260.0,
+            assignedTo: {},
+          },
+          {
+            id: '13',
+            name: 'До сплати',
+            quantity: 1,
+            unitPrice: 600.0,
+            totalPrice: 600.0,
+            assignedTo: {},
           },
         ];
 
-        this.receipt.totalAmount = 745;
-        this.receipt.barName = "The Dragon's Tavern";
-        this.receipt.date = new Date();
+        this.receipt.totalAmount = 3740.0;
+        this.receipt.barName = 'Babo Gardens';
+        this.receipt.date = new Date('2024-08-02T20:59:44');
 
         resolve();
       }, 2000);
@@ -163,40 +227,54 @@ export class CheckSplitComponent implements OnInit {
 
     // Remove participant from all items
     this.receipt.items.forEach((item) => {
-      item.assignedTo = item.assignedTo.filter((id) => id !== participantId);
+      if (item.assignedTo[participantId]) {
+        delete item.assignedTo[participantId];
+      }
     });
 
     this.calculateTotals();
   }
 
-  toggleItemAssignment(itemId: string, participantId: string) {
+  assignItemQuantity(itemId: string, participantId: string, quantity: number) {
     if (!this.receipt) return;
 
     const item = this.receipt.items.find((i) => i.id === itemId);
     if (!item) return;
 
-    const index = item.assignedTo.indexOf(participantId);
-    if (index > -1) {
-      item.assignedTo.splice(index, 1);
+    if (quantity > 0) {
+      item.assignedTo[participantId] = quantity;
     } else {
-      item.assignedTo.push(participantId);
+      delete item.assignedTo[participantId];
     }
 
     this.calculateTotals();
+  }
+
+  getAssignedQuantity(itemId: string, participantId: string): number {
+    if (!this.receipt) return 0;
+    const item = this.receipt.items.find((i) => i.id === itemId);
+    return item?.assignedTo[participantId] || 0;
+  }
+
+  getTotalAssignedQuantity(itemId: string): number {
+    if (!this.receipt) return 0;
+    const item = this.receipt.items.find((i) => i.id === itemId);
+    if (!item) return 0;
+    return Object.values(item.assignedTo).reduce((sum, qty) => sum + qty, 0);
+  }
+
+  getRemainingQuantity(itemId: string): number {
+    if (!this.receipt) return 0;
+    const item = this.receipt.items.find((i) => i.id === itemId);
+    if (!item) return 0;
+    const assigned = this.getTotalAssignedQuantity(itemId);
+    return item.quantity - assigned;
   }
 
   isItemAssignedTo(itemId: string, participantId: string): boolean {
     if (!this.receipt) return false;
     const item = this.receipt.items.find((i) => i.id === itemId);
-    return item ? item.assignedTo.includes(participantId) : false;
-  }
-
-  updateItemShare(itemId: string, participantId: string, percentage: number) {
-    if (!this.editingShares[itemId]) {
-      this.editingShares[itemId] = {};
-    }
-    this.editingShares[itemId][participantId] = percentage;
-    this.calculateTotals();
+    return item ? (item.assignedTo[participantId] || 0) > 0 : false;
   }
 
   calculateTotals() {
@@ -208,63 +286,39 @@ export class CheckSplitComponent implements OnInit {
       p.items = [];
     });
 
-    // Calculate split for each item
+    // Calculate split for each item based on assigned quantities
     this.receipt.items.forEach((item) => {
-      if (item.assignedTo.length === 0) return;
+      const assignedParticipants = Object.keys(item.assignedTo);
+      if (assignedParticipants.length === 0) return;
 
-      // Check if there are custom shares for this item
-      const hasCustomShares = this.editingShares[item.id];
+      // Calculate total assigned quantity
+      const totalAssignedQty = Object.values(item.assignedTo).reduce((sum, qty) => sum + qty, 0);
 
-      if (hasCustomShares) {
-        // Use custom shares
-        const totalShares = Object.values(this.editingShares[item.id]).reduce(
-          (sum, val) => sum + val,
-          0
-        );
+      if (totalAssignedQty === 0) return;
 
-        item.assignedTo.forEach((participantId) => {
-          const share = this.editingShares[item.id][participantId] || 0;
-          const sharePercentage = totalShares > 0 ? (share / totalShares) * 100 : 0;
-          const amount = (item.totalPrice * share) / totalShares;
+      // Calculate amount per each assigned participant based on their quantity
+      assignedParticipants.forEach((participantId) => {
+        const assignedQty = item.assignedTo[participantId];
+        const amount = item.unitPrice * assignedQty;
 
-          const participant = this.receipt!.participants.find((p) => p.id === participantId);
-          if (participant) {
-            participant.totalAmount += amount;
-            participant.items.push({
-              itemId: item.id,
-              itemName: item.name,
-              quantity: item.quantity,
-              sharePercentage,
-              amount,
-            });
-          }
-        });
-      } else {
-        // Equal split among assigned participants
-        const sharePerPerson = item.totalPrice / item.assignedTo.length;
-        const sharePercentage = 100 / item.assignedTo.length;
-
-        item.assignedTo.forEach((participantId) => {
-          const participant = this.receipt!.participants.find((p) => p.id === participantId);
-          if (participant) {
-            participant.totalAmount += sharePerPerson;
-            participant.items.push({
-              itemId: item.id,
-              itemName: item.name,
-              quantity: item.quantity,
-              sharePercentage,
-              amount: sharePerPerson,
-            });
-          }
-        });
-      }
+        const participant = this.receipt!.participants.find((p) => p.id === participantId);
+        if (participant) {
+          participant.totalAmount += amount;
+          participant.items.push({
+            itemId: item.id,
+            itemName: item.name,
+            quantity: assignedQty,
+            amount,
+          });
+        }
+      });
     });
   }
 
   getAssignedParticipantsCount(itemId: string): number {
     if (!this.receipt) return 0;
     const item = this.receipt.items.find((i) => i.id === itemId);
-    return item ? item.assignedTo.length : 0;
+    return item ? Object.keys(item.assignedTo).length : 0;
   }
 
   // D20 Game Methods
@@ -386,9 +440,7 @@ export class CheckSplitComponent implements OnInit {
     this.receipt.participants.forEach((p) => {
       summary += `\n${p.name}: ₴${p.totalAmount.toFixed(2)}\n`;
       p.items.forEach((item) => {
-        summary += `  - ${item.itemName} (${item.sharePercentage.toFixed(
-          0
-        )}%): ₴${item.amount.toFixed(2)}\n`;
+        summary += `  - ${item.itemName} (x${item.quantity}): ₴${item.amount.toFixed(2)}\n`;
       });
     });
 

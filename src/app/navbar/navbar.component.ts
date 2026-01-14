@@ -90,8 +90,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   onFavoritesClick() {
-    // TODO: Implement favorites functionality
-    console.log('Favorites clicked');
+    // Navigate to liked bars page
+    this.router.navigate(['/liked-bars']);
   }
 
   onFriendsClick() {
@@ -114,9 +114,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   onOrganizeRaidClick() {
-    // TODO: Implement organize raid functionality
-    console.log('Organize Raid clicked');
-    // Navigate to raid creation or scroll to raids section
-    this.router.navigate(['/'], { fragment: 'raids-section' });
+    // Navigate to organize raid page
+    this.router.navigate(['/organize-raid']);
   }
 }

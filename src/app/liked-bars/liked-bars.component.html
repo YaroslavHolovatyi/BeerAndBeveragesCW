@@ -1,0 +1,162 @@
+<div class="liked-bars-page">
+  <div class="page-header">
+    <div class="container">
+      <div class="header-content">
+        <div class="title-section">
+          <h1 class="page-title">
+            <i class="fas fa-heart"></i>
+            Your Favorite Taverns
+          </h1>
+          <p class="page-subtitle">
+            {{ likedBars.length }} legendary establishment{{ likedBars.length !== 1 ? 's' : '' }} in
+            your collection
+          </p>
+        </div>
+        @if (likedBars.length > 0) {
+        <button class="btn btn-clear-all" (click)="clearAll()">
+          <i class="fas fa-trash"></i>
+          Clear All
+        </button>
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    @if (likedBars.length > 0) {
+    <!-- Filters and Search -->
+    <div class="filters-section">
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input
+          type="text"
+          [(ngModel)]="searchQuery"
+          (input)="onSearchChange()"
+          placeholder="Search by name, address, or city..."
+          class="search-input"
+        />
+      </div>
+
+      <div class="sort-box">
+        <label for="sortBy">
+          <i class="fas fa-sort"></i>
+          Sort by:
+        </label>
+        <select id="sortBy" [(ngModel)]="sortBy" (change)="onSortChange()" class="sort-select">
+          <option value="date">Recently Liked</option>
+          <option value="name">Name (A-Z)</option>
+          <option value="rating">Highest Rating</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Bars Grid -->
+    @if (filteredBars.length > 0) {
+    <div class="bars-grid">
+      @for (bar of filteredBars; track bar.id) {
+      <div class="bar-card" (click)="navigateToBar(bar.id)">
+        <button
+          class="remove-btn"
+          (click)="removeFromLiked($event, bar.id)"
+          aria-label="Remove from liked"
+          title="Remove from liked"
+        >
+          <i class="fas fa-times"></i>
+        </button>
+
+        <div class="bar-image-container">
+          <img
+            [src]="bar.imageUrl"
+            [alt]="bar.name"
+            class="bar-image"
+            onerror="this.src='races_images/dwarf_m.jpg'"
+          />
+          <div class="liked-badge">
+            <i class="fas fa-heart"></i>
+          </div>
+          @if (bar.timesVisited && bar.timesVisited > 0) {
+          <div class="visits-badge">
+            <i class="fas fa-walking"></i>
+            {{ bar.timesVisited }} visits
+          </div>
+          }
+        </div>
+
+        <div class="bar-content">
+          <h3 class="bar-name">{{ bar.name }}</h3>
+
+          @if (bar.rating !== undefined) {
+          <div class="bar-rating">
+            <div class="stars">
+              @for (star of getStarArray(bar.rating); track $index) {
+              <i class="fas fa-star"></i>
+              } @for (star of getEmptyStarArray(bar.rating); track $index) {
+              <i class="far fa-star"></i>
+              }
+            </div>
+            <span class="rating-value">{{ bar.rating?.toFixed(1) }}</span>
+          </div>
+          }
+
+          <div class="bar-details">
+            <div class="detail-item">
+              <i class="fas fa-map-marker-alt"></i>
+              <span>{{ bar.address }}</span>
+            </div>
+
+            @if (bar.city) {
+            <div class="detail-item">
+              <i class="fas fa-city"></i>
+              <span>{{ bar.city }}</span>
+            </div>
+            } @if (bar.phone) {
+            <div class="detail-item">
+              <i class="fas fa-phone"></i>
+              <span>{{ bar.phone }}</span>
+            </div>
+            } @if (bar.workHours) {
+            <div class="detail-item">
+              <i class="fas fa-clock"></i>
+              <span>{{ bar.workHours }}</span>
+            </div>
+            } @if (bar.priceLevel) {
+            <div class="detail-item price-level">
+              <i class="fas fa-coins"></i>
+              <span
+                >{{ getPriceLevelSymbol(bar.priceLevel) }} -
+                {{ getPriceLevelText(bar.priceLevel) }}</span
+              >
+            </div>
+            }
+          </div>
+
+          <div class="bar-footer">
+            <span class="liked-date">
+              <i class="fas fa-heart-circle-plus"></i>
+              Liked on {{ formatDate(bar.likedAt) }}
+            </span>
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+    } @else {
+    <div class="no-results">
+      <i class="fas fa-search fa-3x"></i>
+      <h3>No bars found</h3>
+      <p>Try adjusting your search criteria</p>
+    </div>
+    } } @else {
+    <!-- Empty State -->
+    <div class="empty-state">
+      <i class="fas fa-heart-broken fa-5x"></i>
+      <h2>No Favorite Taverns Yet</h2>
+      <p>Start exploring and add taverns to your favorites by clicking the heart icon!</p>
+      <button class="btn btn-explore" routerLink="/bars">
+        <i class="fas fa-compass"></i>
+        Explore Taverns
+      </button>
+    </div>
+    }
+  </div>
+</div>

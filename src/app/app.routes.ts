@@ -16,6 +16,8 @@ import { EditUserComponent } from './edit-user/edit-user.component';
 import { CheckSplitComponent } from './check-split/check-split.component';
 import { FriendsComponent } from './friends/friends.component';
 import { SummonPartyComponent } from './summon-party/summon-party.component';
+import { OrganizeRaidComponent } from './organize-raid/organize-raid.component';
+import { LikedBarsComponent } from './liked-bars/liked-bars.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -35,5 +37,7 @@ export const routes: Routes = [
   { path: 'check-split', component: CheckSplitComponent },
   { path: 'friends', component: FriendsComponent },
   { path: 'summon-party', component: SummonPartyComponent },
+  { path: 'organize-raid', component: OrganizeRaidComponent },
+  { path: 'liked-bars', component: LikedBarsComponent },
   { path: '**', redirectTo: '' },
 ];

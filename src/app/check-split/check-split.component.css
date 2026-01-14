@@ -621,6 +621,89 @@
   text-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
 }
 
+/* Quantity Controls */
+.assignment-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.participant-assignment {
+  display: grid;
+  grid-template-columns: 150px 1fr auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem;
+  background-color: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.participant-assignment:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+.participant-label {
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.quantity-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.quantity-controls button {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.quantity-controls button:not(:disabled):hover {
+  background-color: #ffc107;
+  border-color: #ffc107;
+  color: #000;
+  transform: scale(1.1);
+}
+
+.quantity-controls button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.quantity-input {
+  width: 70px;
+  text-align: center;
+  background-color: #2d2d2d;
+  border: 1px solid #444;
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.quantity-input:focus {
+  background-color: #3d3d3d;
+  border-color: #ffc107;
+  color: #fff;
+  box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
+}
+
+.assignment-amount {
+  color: #4caf50;
+  font-weight: 700;
+  font-size: 1.1rem;
+  min-width: 100px;
+  text-align: right;
+}
+
 @media (max-width: 768px) {
   .dice-game-modal {
     padding: 1.5rem;
@@ -646,4 +729,12 @@
     font-size: 1.2rem;
     padding: 6px 12px;
   }
-}
+
+  .participant-assignment {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .assignment-amount {
+    text-align: left;
+  }

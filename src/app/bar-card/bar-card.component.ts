@@ -1,6 +1,7 @@
-import { Component, input } from '@angular/core';
+import { Component, input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { LikedBarsService } from '../services/liked-bars.service';
 
 export interface Bar {
   id: number;
@@ -21,10 +22,16 @@ export interface Bar {
   templateUrl: './bar-card.component.html',
   styleUrl: './bar-card.component.css',
 })
-export class BarCardComponent {
+export class BarCardComponent implements OnInit {
   bar = input.required<Bar>();
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private likedBarsService: LikedBarsService) {}
+
+  ngOnInit() {
+    // Check if bar is liked on init
+    const currentBar = this.bar();
+    currentBar.isLiked = this.likedBarsService.isBarLiked(currentBar.id);
+  }
 
   getPriceLevelText(priceLevel: string): string {
     const priceLevelMap: { [key: string]: string } = {
@@ -38,8 +45,17 @@ export class BarCardComponent {
 
   toggleLike() {
     const currentBar = this.bar();
-    currentBar.isLiked = !currentBar.isLiked;
-    console.log('Like toggled:', currentBar.isLiked);
+    const isLiked = this.likedBarsService.toggleLike({
+      id: currentBar.id,
+      name: currentBar.name,
+      address: currentBar.address,
+      description: currentBar.description,
+      phone: currentBar.phone,
+      rating: currentBar.rating,
+      priceLevel: currentBar.priceLevel,
+      imageUrl: currentBar.imageUrl,
+    });
+    currentBar.isLiked = isLiked;
   }
 
   onCardClick() {

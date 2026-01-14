@@ -151,30 +151,67 @@
 
           @if (receipt && receipt.participants.length > 0) {
           <div class="item-assignment">
-            <label class="text-muted small">Assign to:</label>
-            <div class="assignment-buttons">
+            <label class="text-muted small mb-2">
+              Assign to:
+              <span class="badge bg-info ms-2">
+                {{ getTotalAssignedQuantity(item.id) }}/{{ item.quantity }} assigned
+              </span>
+              @if (getRemainingQuantity(item.id) > 0) {
+              <span class="badge bg-warning ms-1">
+                {{ getRemainingQuantity(item.id) }} remaining
+              </span>
+              }
+            </label>
+            <div class="assignment-grid">
               @for (participant of receipt.participants; track participant.id) {
-              <button
-                class="btn btn-sm assignment-btn"
-                [class.btn-warning]="isItemAssignedTo(item.id, participant.id)"
-                [class.btn-outline-secondary]="!isItemAssignedTo(item.id, participant.id)"
-                (click)="toggleItemAssignment(item.id, participant.id)"
-              >
-                {{ participant.name }}
-              </button>
+              <div class="participant-assignment">
+                <div class="participant-label">{{ participant.name }}</div>
+                <div class="quantity-controls">
+                  <button
+                    class="btn btn-sm btn-outline-secondary"
+                    (click)="
+                      assignItemQuantity(
+                        item.id,
+                        participant.id,
+                        getAssignedQuantity(item.id, participant.id) - 1
+                      )
+                    "
+                    [disabled]="getAssignedQuantity(item.id, participant.id) === 0"
+                  >
+                    <i class="fas fa-minus"></i>
+                  </button>
+                  <input
+                    type="number"
+                    class="form-control form-control-sm quantity-input"
+                    [value]="getAssignedQuantity(item.id, participant.id)"
+                    (input)="
+                      assignItemQuantity(item.id, participant.id, +$any($event.target).value)
+                    "
+                    min="0"
+                    [max]="item.quantity"
+                  />
+                  <button
+                    class="btn btn-sm btn-outline-secondary"
+                    (click)="
+                      assignItemQuantity(
+                        item.id,
+                        participant.id,
+                        getAssignedQuantity(item.id, participant.id) + 1
+                      )
+                    "
+                    [disabled]="getTotalAssignedQuantity(item.id) >= item.quantity"
+                  >
+                    <i class="fas fa-plus"></i>
+                  </button>
+                </div>
+                @if (getAssignedQuantity(item.id, participant.id) > 0) {
+                <div class="assignment-amount">
+                  ₴{{ (item.unitPrice * getAssignedQuantity(item.id, participant.id)).toFixed(2) }}
+                </div>
+                }
+              </div>
               }
             </div>
-
-            @if (getAssignedParticipantsCount(item.id) > 0) {
-            <div class="split-info">
-              <small class="text-success">
-                <i class="fas fa-check-circle"></i>
-                Split between {{ getAssignedParticipantsCount(item.id) }}
-                {{ getAssignedParticipantsCount(item.id) === 1 ? 'person' : 'people' }}
-                (₴{{ (item.totalPrice / getAssignedParticipantsCount(item.id)).toFixed(2) }} each)
-              </small>
-            </div>
-            }
           </div>
           }
         </div>
@@ -211,7 +248,7 @@
             @for (item of participant.items; track item.itemId) {
             <div class="summary-item">
               <span class="item-name">{{ item.itemName }}</span>
-              <span class="item-share">({{ item.sharePercentage.toFixed(0) }}%)</span>
+              <span class="item-share">(x{{ item.quantity }})</span>
               <span class="item-amount">₴{{ item.amount.toFixed(2) }}</span>
             </div>
             }

@@ -136,7 +136,30 @@
                   <span class="friend-race">
                     <i class="fas fa-shield-alt me-1"></i>{{ friend.race }}
                   </span>
+                  <span class="friend-alcohol" *ngIf="friend.favoriteAlcohol">
+                    <i class="fas fa-beer me-1"></i>{{ friend.favoriteAlcohol }}
+                  </span>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Alcohol Preferences Chart -->
+        <div class="form-group">
+          <div *ngIf="getSelectedFriends().length > 0">
+            <label class="form-label">
+              <i class="fas fa-chart-bar me-2"></i>Party Beverage Preferences
+            </label>
+            <div class="chart-container">
+              <canvas #alcoholChart></canvas>
+            </div>
+            <div class="chart-legend">
+              <div class="legend-item" *ngFor="let friend of getSelectedFriends()">
+                <span class="legend-color" [style.background-color]="friend.color"></span>
+                <span class="legend-label"
+                  >{{ friend.firstName }}: {{ friend.favoriteAlcohol }}</span
+                >
               </div>
             </div>
           </div>

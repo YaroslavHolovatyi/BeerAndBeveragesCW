@@ -33,6 +33,7 @@
     "@ngrx/store-devtools": "^19.2.1",
     "@types/three": "^0.181.0",
     "bootstrap": "^5.3.8",
+    "chart.js": "^4.5.1",
     "rxjs": "~7.8.0",
     "three": "^0.181.2",
     "three.js": "^0.77.1",

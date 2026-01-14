@@ -4,7 +4,7 @@ export interface ReceiptItem {
   quantity: number;
   unitPrice: number;
   totalPrice: number;
-  assignedTo: string[]; // User IDs who share this item
+  assignedTo: { [participantId: string]: number }; // participantId -> quantity assigned
 }
 
 export interface ReceiptParticipant {
@@ -15,7 +15,6 @@ export interface ReceiptParticipant {
     itemId: string;
     itemName: string;
     quantity: number;
-    sharePercentage: number; // What % of the item this person pays for
     amount: number;
   }[];
 }

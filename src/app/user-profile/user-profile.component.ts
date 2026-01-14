@@ -5,6 +5,7 @@ import { City } from '../shared/cities';
 import { CitySelectorModalComponent } from '../map/city-selector-modal/city-selector-modal.component';
 import { AuthService } from '../services/auth.service';
 import { CityService } from '../services/city.service';
+import { LikedBarsService } from '../services/liked-bars.service';
 import { Subject, takeUntil } from 'rxjs';
 
 export interface User {
@@ -85,7 +86,8 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private authService: AuthService,
-    private cityService: CityService
+    private cityService: CityService,
+    private likedBarsService: LikedBarsService
   ) {}
 
   ngOnInit() {
@@ -97,6 +99,8 @@ export class UserProfileComponent implements OnInit, OnDestroy {
         this.cityService.getCities().subscribe((cities) => {
           this.selectedCityObj = cities.find((c) => c.name === user.mainCity.name) || null;
         });
+        // Sync favorite bars with liked bars service
+        this.syncFavoriteBarsToLiked();
       } else {
         // If no user is logged in, redirect to login
         this.router.navigate(['/login']);
@@ -169,5 +173,27 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   logout() {
     this.authService.logout();
     this.router.navigate(['/login']);
+  }
+
+  syncFavoriteBarsToLiked() {
+    // Add favorite bars to liked bars if not already there
+    this.favoriteBars.forEach((bar) => {
+      if (!this.likedBarsService.isBarLiked(bar.id)) {
+        this.likedBarsService.toggleLike({
+          id: bar.id,
+          name: bar.name,
+          address: bar.address,
+          phone: bar.phone,
+          rating: bar.rating,
+          imageUrl: bar.imageUrl,
+          workHours: bar.workHours,
+          timesVisited: bar.timesVisited,
+        });
+      }
+    });
+  }
+
+  viewAllLikedBars() {
+    this.router.navigate(['/liked-bars']);
   }
 }

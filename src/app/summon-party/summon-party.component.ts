@@ -1,12 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
+import { Chart, ChartConfiguration, registerables } from 'chart.js';
 import * as PartyActions from '../store/party.actions';
 import { DungeonParty } from '../store/party.actions';
 import { selectCurrentParty } from '../store/party.selectors';
+
+Chart.register(...registerables);
 
 interface Friend {
   id: number;
@@ -16,6 +19,8 @@ interface Friend {
   profileImage?: string;
   race?: string;
   selected?: boolean;
+  favoriteAlcohol?: string;
+  color?: string;
 }
 
 @Component({
@@ -25,10 +30,13 @@ interface Friend {
   templateUrl: './summon-party.component.html',
   styleUrl: './summon-party.component.css',
 })
-export class SummonPartyComponent implements OnInit {
+export class SummonPartyComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild('alcoholChart') alcoholChartCanvas!: ElementRef<HTMLCanvasElement>;
+
   partyName = '';
   selectedTime = '';
   currentParty$: Observable<DungeonParty | null>;
+  alcoholChart: Chart | null = null;
 
   timeOptions = [
     { value: 'now', label: 'NOW!!!' },
@@ -49,6 +57,8 @@ export class SummonPartyComponent implements OnInit {
       profileImage: 'races_images/dwarf_m.jpg',
       race: 'Dwarf',
       selected: false,
+      favoriteAlcohol: 'Dark Beer',
+      color: '#8B4513',
     },
     {
       id: 2,
@@ -58,6 +68,8 @@ export class SummonPartyComponent implements OnInit {
       profileImage: 'races_images/elf_m.jpg',
       race: 'Elf',
       selected: false,
+      favoriteAlcohol: 'Wine',
+      color: '#9C27B0',
     },
     {
       id: 3,
@@ -67,6 +79,8 @@ export class SummonPartyComponent implements OnInit {
       profileImage: 'races_images/dwarf_m.jpg',
       race: 'Dwarf',
       selected: false,
+      favoriteAlcohol: 'Ale',
+      color: '#FF9800',
     },
     {
       id: 4,
@@ -76,6 +90,8 @@ export class SummonPartyComponent implements OnInit {
       profileImage: 'races_images/human_m.jpg',
       race: 'Human',
       selected: false,
+      favoriteAlcohol: 'Whiskey',
+      color: '#D4AF37',
     },
     {
       id: 5,
@@ -85,6 +101,8 @@ export class SummonPartyComponent implements OnInit {
       profileImage: 'races_images/human_m.jpg',
       race: 'Human',
       selected: false,
+      favoriteAlcohol: 'Mead',
+      color: '#4CAF50',
     },
   ];
 
@@ -101,8 +119,192 @@ export class SummonPartyComponent implements OnInit {
     }
   }
 
+  ngAfterViewInit() {
+    // Chart will be initialized when first friend is selected
+  }
+
+  ngOnDestroy() {
+    if (this.alcoholChart) {
+      this.alcoholChart.destroy();
+    }
+  }
+
+  initializeChart() {
+    if (!this.alcoholChartCanvas || !this.alcoholChartCanvas.nativeElement) {
+      console.warn('Chart canvas not available yet');
+      return;
+    }
+
+    const ctx = this.alcoholChartCanvas.nativeElement.getContext('2d');
+    if (!ctx) return;
+
+    const config: ChartConfiguration = {
+      type: 'radar',
+      data: {
+        labels: [],
+        datasets: [],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          r: {
+            beginAtZero: true,
+            max: 5,
+            min: 0,
+            ticks: {
+              stepSize: 1,
+              color: '#fff',
+              backdropColor: 'transparent',
+              font: {
+                size: 12,
+                weight: 'bold',
+              },
+            },
+            grid: {
+              color: 'rgba(212, 175, 55, 0.3)',
+              lineWidth: 2,
+            },
+            angleLines: {
+              color: 'rgba(212, 175, 55, 0.3)',
+              lineWidth: 2,
+            },
+            pointLabels: {
+              color: '#fff',
+              font: {
+                size: 14,
+                weight: 'bold',
+              },
+            },
+          },
+        },
+        plugins: {
+          legend: {
+            display: true,
+            position: 'top',
+            labels: {
+              color: '#fff',
+              font: {
+                size: 14,
+                weight: 'bold',
+              },
+              padding: 15,
+              boxWidth: 20,
+              boxHeight: 20,
+            },
+          },
+          title: {
+            display: true,
+            text: 'Party Beverage Preferences',
+            color: '#d4af37',
+            font: {
+              size: 20,
+              weight: 'bold',
+            },
+            padding: {
+              top: 10,
+              bottom: 20,
+            },
+          },
+          tooltip: {
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            titleColor: '#d4af37',
+            bodyColor: '#fff',
+            borderColor: '#d4af37',
+            borderWidth: 2,
+            padding: 12,
+            displayColors: true,
+            callbacks: {
+              label: function (context) {
+                return context.dataset.label + ': ' + context.parsed.r;
+              },
+            },
+          },
+        },
+      },
+    };
+
+    this.alcoholChart = new Chart(ctx, config);
+    this.populateChartData();
+  }
+
+  updateChart() {
+    const selectedFriends = this.getSelectedFriends();
+
+    if (selectedFriends.length === 0) {
+      if (this.alcoholChart) {
+        this.alcoholChart.data.labels = [];
+        this.alcoholChart.data.datasets = [];
+        this.alcoholChart.update();
+      }
+      return;
+    }
+
+    // Initialize chart if not already initialized and canvas is available
+    if (!this.alcoholChart) {
+      setTimeout(() => {
+        this.initializeChart();
+      }, 100);
+      return;
+    }
+
+    this.populateChartData();
+  }
+
+  populateChartData() {
+    if (!this.alcoholChart) return;
+
+    const selectedFriends = this.getSelectedFriends();
+
+    if (selectedFriends.length === 0) {
+      this.alcoholChart.data.labels = [];
+      this.alcoholChart.data.datasets = [];
+      this.alcoholChart.update();
+      return;
+    }
+
+    // Core beverage types to always show for proper radar shape
+    const coreBeverages = ['Wine', 'Ale', 'Dark Beer', 'Whiskey', 'Mead'];
+
+    // Count preferences for each beverage type
+    const beverageCounts: { [key: string]: number } = {};
+    coreBeverages.forEach((bev) => (beverageCounts[bev] = 0));
+
+    // Add selected friends' beverages if not in core list
+    selectedFriends.forEach((friend) => {
+      const alcohol = friend.favoriteAlcohol || 'Unknown';
+      if (!beverageCounts.hasOwnProperty(alcohol)) {
+        beverageCounts[alcohol] = 0;
+      }
+      beverageCounts[alcohol]++;
+    });
+
+    // Get all beverage labels (core + any extras from friends)
+    const beverageLabels = Object.keys(beverageCounts);
+
+    this.alcoholChart.data.labels = beverageLabels;
+
+    // Create a dataset for each friend
+    this.alcoholChart.data.datasets = selectedFriends.map((friend) => ({
+      label: friend.firstName,
+      data: beverageLabels.map((beverage) => (friend.favoriteAlcohol === beverage ? 1 : 0)),
+      backgroundColor: friend.color ? friend.color + '40' : 'rgba(153, 153, 153, 0.4)',
+      borderColor: friend.color || '#999',
+      borderWidth: 3,
+      pointBackgroundColor: friend.color || '#999',
+      pointBorderColor: '#fff',
+      pointHoverBackgroundColor: '#fff',
+      pointHoverBorderColor: friend.color || '#999',
+      pointRadius: 5,
+      pointHoverRadius: 7,
+    }));
+
+    this.alcoholChart.update();
+  }
+
   toggleFriendSelection(friend: Friend) {
     friend.selected = !friend.selected;
+    this.updateChart();
   }
 
   getSelectedFriends(): Friend[] {
@@ -160,6 +362,7 @@ export class SummonPartyComponent implements OnInit {
     this.selectedTime = '';
     this.customDateTime = '';
     this.friends.forEach((f) => (f.selected = false));
+    this.updateChart();
   }
 
   dismissCurrentParty() {

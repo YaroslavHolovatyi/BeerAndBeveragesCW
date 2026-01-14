@@ -1,0 +1,163 @@
+<div class="organize-raid-container">
+  <div class="raid-form-card">
+    <div class="header">
+      <h1 class="title">⚔️ Organize a Raid</h1>
+      <p class="subtitle">Plan your next legendary adventure at a tavern</p>
+    </div>
+
+    <form class="raid-form" (ngSubmit)="organizeRaid()">
+      <!-- Raid Name -->
+      <div class="form-group">
+        <label for="raidName" class="form-label">
+          <span class="label-icon">📜</span>
+          Raid Name *
+        </label>
+        <input
+          type="text"
+          id="raidName"
+          name="raidName"
+          [(ngModel)]="raid.name"
+          class="form-input"
+          placeholder="Enter a legendary name for your raid..."
+          required
+        />
+      </div>
+
+      <!-- Theme Selection -->
+      <div class="form-group">
+        <label for="raidTheme" class="form-label">
+          <span class="label-icon">🎭</span>
+          Raid Theme *
+        </label>
+        <select
+          id="raidTheme"
+          name="raidTheme"
+          [(ngModel)]="raid.theme"
+          class="form-select"
+          required
+        >
+          <option value="">Choose your adventure theme...</option>
+          <option *ngFor="let theme of themeOptions" [value]="theme.value">
+            {{ theme.label }}
+          </option>
+        </select>
+        <div *ngIf="raid.theme" class="theme-preview">Selected: {{ getThemeIcon(raid.theme) }}</div>
+      </div>
+
+      <!-- Image Selection -->
+      <div class="form-group">
+        <label for="raidImage" class="form-label">
+          <span class="label-icon">🖼️</span>
+          Raid Image
+        </label>
+        <select id="raidImage" name="raidImage" [(ngModel)]="raid.image" class="form-select">
+          <option value="">Choose an image (optional)...</option>
+          <option *ngFor="let img of imageOptions" [value]="img.value">
+            {{ img.label }}
+          </option>
+        </select>
+        <div *ngIf="raid.image" class="image-preview">
+          <img [src]="raid.image" alt="Raid preview" />
+        </div>
+      </div>
+
+      <!-- Bar Selection -->
+      <div class="form-group">
+        <label for="raidBar" class="form-label">
+          <span class="label-icon">🏰</span>
+          Select Bar/Tavern *
+        </label>
+        <div class="bar-search-container">
+          <input
+            type="text"
+            id="raidBar"
+            name="raidBar"
+            [(ngModel)]="searchQuery"
+            (input)="filterBars()"
+            (focus)="onBarInputFocus()"
+            (blur)="onBarInputBlur()"
+            class="form-input"
+            placeholder="Search for a bar by name, city, or address..."
+            required
+          />
+          <div *ngIf="showBarDropdown && filteredBars.length > 0" class="bar-dropdown">
+            <div *ngFor="let bar of filteredBars" class="bar-option" (click)="selectBar(bar)">
+              <div class="bar-info">
+                <div class="bar-name">{{ bar.name }}</div>
+                <div class="bar-details">{{ bar.address }}, {{ bar.city }}</div>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="showBarDropdown && filteredBars.length === 0" class="no-results">
+            No bars found matching your search
+          </div>
+        </div>
+        <div *ngIf="raid.bar" class="selected-bar">
+          <div class="selected-bar-info">
+            <strong>📍 {{ raid.bar.name }}</strong>
+            <span>{{ raid.bar.address }}, {{ raid.bar.city }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Date and Time -->
+      <div class="form-row">
+        <div class="form-group form-group-half">
+          <label for="raidDate" class="form-label">
+            <span class="label-icon">📅</span>
+            Date *
+          </label>
+          <input
+            type="date"
+            id="raidDate"
+            name="raidDate"
+            [(ngModel)]="raid.date"
+            class="form-input"
+            required
+          />
+        </div>
+        <div class="form-group form-group-half">
+          <label for="raidTime" class="form-label">
+            <span class="label-icon">⏰</span>
+            Time *
+          </label>
+          <input
+            type="time"
+            id="raidTime"
+            name="raidTime"
+            [(ngModel)]="raid.time"
+            class="form-input"
+            required
+          />
+        </div>
+      </div>
+
+      <!-- Raid Description -->
+      <div class="form-group">
+        <label for="raidDescription" class="form-label">
+          <span class="label-icon">📖</span>
+          About this Raid *
+        </label>
+        <textarea
+          id="raidDescription"
+          name="raidDescription"
+          [(ngModel)]="raid.description"
+          class="form-textarea"
+          placeholder="Describe your raid adventure... What will you do? What drinks will you try? What challenges await?"
+          rows="5"
+          required
+        ></textarea>
+        <div class="char-count">{{ raid.description.length }} / 500 characters</div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" (click)="cancel()">Cancel</button>
+        <button type="button" class="btn btn-reset" (click)="resetForm()">Reset Form</button>
+        <button type="submit" class="btn btn-primary" [disabled]="!isFormValid()">
+          ⚔️ Organize Raid
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
